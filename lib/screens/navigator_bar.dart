@@ -284,31 +284,44 @@ class _NavigatorBarState extends State<NavigatorBar> {
         ScreenCalculator(keyNotification: keyNotification),
       ];
     }
-    return WillPopScope(
-        onWillPop: _onBackPressed,
-        child: Scaffold(
-            drawer: const MenuDrawer(),
-            body: Stack(alignment: AlignmentDirectional.bottomStart, children: [
-              Column(
-                children: [
-                  const SizedBox(height: 25),
-                  SizedBox(
-                    key: keyMenu,
-                    height: MediaQuery.of(context).size.width / 6,
-                    width: MediaQuery.of(context).size.width / 6,
-                  )
-                ],
-              ),
-              pageList.elementAt(_currentIndex),
-              NavigationDown(
-                stateApp: widget.stateApp,
-                currentIndex: _currentIndex,
-                keyBottomNavigation1: keyBottomNavigation1,
-                keyBottomNavigation2: keyBottomNavigation2,
-                keyBottomNavigation3: keyBottomNavigation3,
-                onTap: (i) => setState(() => _currentIndex = i),
-              )
-            ])));
+    return PopScope(
+      canPop:
+          false, // Evita que el usuario cierre la pantalla con el botón de retroceso
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        bool exitApp = await _onBackPressed();
+        if (exitApp) {
+          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        }
+      },
+      child: Scaffold(
+        drawer: const MenuDrawer(),
+        body: Stack(
+          alignment: AlignmentDirectional.bottomStart,
+          children: [
+            Column(
+              children: [
+                const SizedBox(height: 25),
+                SizedBox(
+                  key: keyMenu,
+                  height: MediaQuery.of(context).size.width / 6,
+                  width: MediaQuery.of(context).size.width / 6,
+                ),
+              ],
+            ),
+            pageList.elementAt(_currentIndex),
+            NavigationDown(
+              stateApp: widget.stateApp,
+              currentIndex: _currentIndex,
+              keyBottomNavigation1: keyBottomNavigation1,
+              keyBottomNavigation2: keyBottomNavigation2,
+              keyBottomNavigation3: keyBottomNavigation3,
+              onTap: (i) => setState(() => _currentIndex = i),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<bool> _onBackPressed() async {

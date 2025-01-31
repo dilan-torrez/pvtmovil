@@ -66,86 +66,103 @@ class ScreenSwitchState extends State<ScreenSwitch> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: _onBackPressed,
-        child: Scaffold(
-          body: Stack(children: [
+    return PopScope(
+      canPop:
+          false, // Evita que el usuario cierre la pantalla con el botón de retroceso
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        bool exitApp = await _onBackPressed();
+        if (exitApp) {
+          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        }
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
             const Formtop(),
             const FormButtom(),
             Padding(
-                padding: const EdgeInsets.fromLTRB(15, 30, 15, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (statelogin)
-                      GestureDetector(
-                          onTap: () => setState(() => statelogin = !statelogin),
-                          child: Icon(Icons.arrow_back_ios,
-                              color: AdaptiveTheme.of(context).mode.isDark
-                                  ? Colors.white
-                                  : Colors.black)),
-                    Image(
-                      image: AssetImage(
-                        AdaptiveTheme.of(context).mode.isDark
-                            ? 'assets/images/muserpol-logo.png'
-                            : 'assets/images/muserpol-logo2.png',
+              padding: const EdgeInsets.fromLTRB(15, 30, 15, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (statelogin)
+                    GestureDetector(
+                      onTap: () => setState(() => statelogin = !statelogin),
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: AdaptiveTheme.of(context).mode.isDark
+                            ? Colors.white
+                            : Colors.black,
                       ),
                     ),
-                    Expanded(
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: statelogin
-                              ? FadeIn(
-                                  animate: statelogin,
-                                  child: ScreenLogin(
-                                      deviceId: deviceId!,
-                                      stateOfficeVirtual: stateOF))
-                              : FadeIn(
-                                  animate: !statelogin,
-                                  child: Column(
-                                    children: [
-                                      optionTool(
-                                          const Image(
-                                            image: AssetImage(
-                                              'assets/images/couple.png',
-                                            ),
-                                          ),
-                                          'COMPLEMENTO ECONÓMICO',
-                                          'Creación y seguimiento de trámites de Complemento Económico.',
-                                          () => setState(() => stateOF = false),
-                                          false),
-                                      optionTool(
-                                          const Image(
-                                            image: AssetImage(
-                                              'assets/images/computer.png',
-                                            ),
-                                          ),
-                                          'OFICINA VIRTUAL',
-                                          'Control de Aportes y seguimiento de trámites de Préstamos.',
-                                          () => setState(() => stateOF = true),
-                                          false),
-                                      optionTool(
-                                          SvgPicture.asset(
-                                            'assets/icons/qr.svg',
-                                            height: 50.sp,
-                                            colorFilter: const ColorFilter.mode(
-                                                Color(0xff419388),
-                                                BlendMode.srcIn),
-                                          ),
-                                          'SEGUIMIENTO CON PR',
-                                          'Seguimiento de trámite de Préstamos y Beneficios Económicos con QR.',
-                                          () => scan(),
-                                          true),
-                                    ],
-                                  ),
+                  Image(
+                    image: AssetImage(
+                      AdaptiveTheme.of(context).mode.isDark
+                          ? 'assets/images/muserpol-logo.png'
+                          : 'assets/images/muserpol-logo2.png',
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: statelogin
+                            ? FadeIn(
+                                animate: statelogin,
+                                child: ScreenLogin(
+                                  deviceId: deviceId!,
+                                  stateOfficeVirtual: stateOF,
                                 ),
-                        ),
+                              )
+                            : FadeIn(
+                                animate: !statelogin,
+                                child: Column(
+                                  children: [
+                                    optionTool(
+                                      const Image(
+                                        image: AssetImage(
+                                            'assets/images/couple.png'),
+                                      ),
+                                      'COMPLEMENTO ECONÓMICO',
+                                      'Creación y seguimiento de trámites de Complemento Económico.',
+                                      () => setState(() => stateOF = false),
+                                      false,
+                                    ),
+                                    optionTool(
+                                      const Image(
+                                        image: AssetImage(
+                                            'assets/images/computer.png'),
+                                      ),
+                                      'OFICINA VIRTUAL',
+                                      'Control de Aportes y seguimiento de trámites de Préstamos.',
+                                      () => setState(() => stateOF = true),
+                                      false,
+                                    ),
+                                    optionTool(
+                                      SvgPicture.asset(
+                                        'assets/icons/qr.svg',
+                                        height: 50.sp,
+                                        colorFilter: const ColorFilter.mode(
+                                            Color(0xff419388), BlendMode.srcIn),
+                                      ),
+                                      'SEGUIMIENTO CON PR',
+                                      'Seguimiento de trámite de Préstamos y Beneficios Económicos con QR.',
+                                      () => scan(),
+                                      true,
+                                    ),
+                                  ],
+                                ),
+                              ),
                       ),
-                    )
-                  ],
-                ))
-          ]),
-        ));
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future scan() async {
