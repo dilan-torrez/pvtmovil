@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:muserpol_pvt/components/headers.dart';
+import 'package:muserpol_pvt/model/biometric_user_model.dart';
 import 'package:muserpol_pvt/components/button.dart';
 import 'package:muserpol_pvt/services/service_method.dart';
 import 'package:muserpol_pvt/services/services.dart';
+import 'package:muserpol_pvt/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class ScreenCalculator extends StatefulWidget {
   final GlobalKey? keyNotification;
@@ -54,6 +57,9 @@ class _ScreenCalculatorState extends State<ScreenCalculator> {
       debugPrint('Préstamo o modalidad no seleccionados.');
       return;
     }
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final biometric =
+        biometricUserModelFromJson(await authService.readBiometric());
 
     // Construir el cuerpo de la solicitud
     Map<String, dynamic> requestBody = {
@@ -61,6 +67,7 @@ class _ScreenCalculatorState extends State<ScreenCalculator> {
       'procedure_id': selectedProcedure,
       'amount': _montoController.text,
       'term': _plazoController.text,
+      'id_affiliate': biometric.affiliateId,
     };
 
     var response = await serviceMethod(

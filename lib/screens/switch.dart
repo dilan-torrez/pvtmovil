@@ -145,7 +145,7 @@ class ScreenSwitchState extends State<ScreenSwitch> {
                                         colorFilter: const ColorFilter.mode(
                                             Color(0xff419388), BlendMode.srcIn),
                                       ),
-                                      'SEGUIMIENTO CON PR',
+                                      'SEGUIMIENTO CON QR',
                                       'Seguimiento de trámite de Préstamos y Beneficios Económicos con QR.',
                                       () => scan(),
                                       true,

@@ -88,3 +88,5 @@ String servicePrintKadex(int loanId) =>
 String newCalculator() => '$hostSTI/app/information_calculator/';
 String listModalities() => '$hostSTI/app/listModalities/';
 String calculatorLoan() => '$hostSTI/app/newCalculatorLoan/';
+String modalitiesSelect(int idAffiliate, String idModalities) =>
+    '$hostSTI/app/CalculatorLoan/$idAffiliate/$idModalities';
