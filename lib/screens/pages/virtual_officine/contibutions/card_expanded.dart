@@ -10,7 +10,11 @@ class CardExpanded extends StatefulWidget {
   final String index;
   final Contribution contribution;
   final Color colorRefund;
-  const CardExpanded({super.key, required this.colorRefund, required this.index, required this.contribution});
+  const CardExpanded(
+      {super.key,
+      required this.colorRefund,
+      required this.index,
+      required this.contribution});
 
   @override
   State<CardExpanded> createState() => _CardExpandedState();
@@ -25,7 +29,7 @@ class _CardExpandedState extends State<CardExpanded> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent.withOpacity(0.5),
+        backgroundColor: Colors.transparent.withValues(alpha: 0.5 * 255),
         body: GestureDetector(
           child: Center(
             child: Hero(
@@ -35,14 +39,19 @@ class _CardExpandedState extends State<CardExpanded> {
                   child: GestureDetector(
                     onTap: () {},
                     child: ContainerComponent(
-                        height: (widget.contribution.state == 'ACTIVO') ? sizeHeight / 1.5 : sizeHeight / 3,
+                        height: (widget.contribution.state == 'ACTIVO')
+                            ? sizeHeight / 1.5
+                            : sizeHeight / 3,
                         width: MediaQuery.of(context).size.width / 1.1,
-                        color: AdaptiveTheme.of(context).theme.scaffoldBackgroundColor,
+                        color: AdaptiveTheme.of(context)
+                            .theme
+                            .scaffoldBackgroundColor,
                         child: Column(
                           children: [
                             HedersComponent(
                                 titleHeader: widget.contribution.state,
-                                title: DateFormat(' dd, MMMM yyyy ', "es_ES").format(widget.contribution.monthYear!)),
+                                title: DateFormat(' dd, MMMM yyyy ', "es_ES")
+                                    .format(widget.contribution.monthYear!)),
                             Expanded(
                                 child: Center(
                               child: SingleChildScrollView(
@@ -61,19 +70,44 @@ class _CardExpandedState extends State<CardExpanded> {
                                             style: BorderStyle.solid,
                                           ),
                                         ),
-                                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                        defaultVerticalAlignment:
+                                            TableCellVerticalAlignment.middle,
                                         children: [
-                                          tableInfo('Cotizable', Text(widget.contribution.quotable!)),
-                                          if (widget.contribution.state == 'ACTIVO')
-                                            tableInfo('Fondo de retiro', Text(widget.contribution.retirementFund!)),
-                                          if (widget.contribution.state == 'ACTIVO')
-                                            tableInfo('Cuota mortuoria', Text(widget.contribution.mortuaryQuota!)),
-                                          if (widget.contribution.state == 'ACTIVO')
-                                            tableInfo('Aporte', Text(widget.contribution.contributionTotal!)),
-                                          if (widget.contribution.state == 'ACTIVO')
-                                            tableInfo('Reintegro', Text('${widget.contribution.reimbursementTotal!} Bs')),
-                                          tableInfo(widget.contribution.state == 'ACTIVO' ? 'Total Aporte con Reintegro' : 'Total Aporte',
-                                              Text('${widget.contribution.total!} Bs')),
+                                          tableInfo(
+                                              'Cotizable',
+                                              Text(widget
+                                                  .contribution.quotable!)),
+                                          if (widget.contribution.state ==
+                                              'ACTIVO')
+                                            tableInfo(
+                                                'Fondo de retiro',
+                                                Text(widget.contribution
+                                                    .retirementFund!)),
+                                          if (widget.contribution.state ==
+                                              'ACTIVO')
+                                            tableInfo(
+                                                'Cuota mortuoria',
+                                                Text(widget.contribution
+                                                    .mortuaryQuota!)),
+                                          if (widget.contribution.state ==
+                                              'ACTIVO')
+                                            tableInfo(
+                                                'Aporte',
+                                                Text(widget.contribution
+                                                    .contributionTotal!)),
+                                          if (widget.contribution.state ==
+                                              'ACTIVO')
+                                            tableInfo(
+                                                'Reintegro',
+                                                Text(
+                                                    '${widget.contribution.reimbursementTotal!} Bs')),
+                                          tableInfo(
+                                              widget.contribution.state ==
+                                                      'ACTIVO'
+                                                  ? 'Total Aporte con Reintegro'
+                                                  : 'Total Aporte',
+                                              Text(
+                                                  '${widget.contribution.total!} Bs')),
                                         ])
                                   ],
                                 ),

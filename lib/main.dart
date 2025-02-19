@@ -145,7 +145,7 @@ class _MuserpolState extends State<Muserpol> with WidgetsBindingObserver {
     return AdaptiveTheme(
         light: styleLigth(),
         dark: styleDark(),
-        debugShowFloatingThemeButton: true,
+        debugShowFloatingThemeButton: false,
         initial: widget.savedThemeMode ?? AdaptiveThemeMode.light,
         builder: (theme, darkTheme) => MaterialApp(
             localizationsDelegates: const [
@@ -157,7 +157,7 @@ class _MuserpolState extends State<Muserpol> with WidgetsBindingObserver {
               Locale('es', 'ES'), // Spanish
               Locale('en', 'US'), // English
             ],
-            debugShowCheckedModeBanner: true,
+            debugShowCheckedModeBanner: false,
             navigatorKey: navigatorKey,
             theme: theme,
             darkTheme: darkTheme,
