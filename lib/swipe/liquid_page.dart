@@ -13,7 +13,8 @@ final liquidPages = [
       imageFront: "assets/icons/7.png",
       titleText: "EVITE HACER FILAS",
       subtitleText: "COMPLEMENTO ECONÓMICO",
-      text: "Realice la solicitud y seguimiento del pago del Beneficio del Complemento Económico"),
+      text:
+          "Realice la solicitud y seguimiento del pago del Beneficio del Complemento Económico"),
   const LiquidPage(
       imageBackground: 'assets/images/003.webp',
       imageFront: "assets/icons/003.png",
@@ -26,6 +27,12 @@ final liquidPages = [
       titleText: "SEGUIMIENTO\nDE",
       subtitleText: "PRESTAMOS",
       text: "Realiza seguimiento de tus prestamos"),
+  const LiquidPage(
+      imageBackground: 'assets/images/002.webp',
+      imageFront: "assets/icons/6.png",
+      titleText: "CALCULA\nTU",
+      subtitleText: "PROXIMO PRÉSTAMO",
+      text: "Realiza el cálculo de las cuotas")
 ];
 
 class LiquidPage extends StatelessWidget {
@@ -57,15 +64,28 @@ class LiquidPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(titleText, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w400)),
-              Text(subtitleText, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)),
+              Text(titleText,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w400)),
+              Text(subtitleText,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold)),
               SizedBox(
                 height: 10.h,
               ),
               Text(
                 text,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w400),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.w400),
               ),
             ],
           ),

@@ -3,41 +3,50 @@ import 'package:muserpol_pvt/model/files_model.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'dart:math' as math;
 
-TargetFocus targetBottomNagigation1(GlobalKey<State<StatefulWidget>> keyTarget, StateAplication stateApp) {
-  return TargetFocus(identify: "keyBottomNavigation1", keyTarget: keyTarget, alignSkip: Alignment.topRight, contents: [
-    TargetContent(
-      align: ContentAlign.top,
-      builder: (context, controller) {
-        return Column(
-          verticalDirection: VerticalDirection.down,
-          children: <Widget>[
-            Padding(
-                padding: const EdgeInsets.all(30),
-                child: Text(
-                  stateApp == StateAplication.complement ? "Aquí podrá ver su trámite solicitado" : "Aquí podrá ver sus aportes",
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                )),
-            Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.rotationY(180),
-                child: RotationTransition(
-                    turns: const AlwaysStoppedAnimation(15 / 180),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Image.asset(
-                        'assets/images/arrow.png',
-                        color: Colors.white,
-                        height: 100,
-                      ),
-                    )))
-          ],
-        );
-      },
-    ),
-  ]);
+TargetFocus targetBottomNagigation1(
+    GlobalKey<State<StatefulWidget>> keyTarget, StateAplication stateApp) {
+  return TargetFocus(
+      identify: "keyBottomNavigation1",
+      keyTarget: keyTarget,
+      alignSkip: Alignment.topRight,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          builder: (context, controller) {
+            return Column(
+              verticalDirection: VerticalDirection.down,
+              children: <Widget>[
+                Padding(
+                    padding: const EdgeInsets.all(30),
+                    child: Text(
+                      stateApp == StateAplication.complement
+                          ? "Aquí podrá ver su trámite solicitado"
+                          : "Aquí podrá ver sus aportes",
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    )),
+                Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationY(180),
+                    child: RotationTransition(
+                        turns: const AlwaysStoppedAnimation(15 / 180),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Image.asset(
+                            'assets/images/arrow.png',
+                            color: Colors.white,
+                            height: 100,
+                          ),
+                        )))
+              ],
+            );
+          },
+        ),
+      ]);
 }
 
-TargetFocus targetBottomNavigation2(GlobalKey<State<StatefulWidget>> keyTarget, StateAplication stateApp) {
+TargetFocus targetBottomNavigation2(
+    GlobalKey<State<StatefulWidget>> keyTarget, StateAplication stateApp) {
   return TargetFocus(
     identify: "keyBottomNavigation2",
     keyTarget: keyTarget,
@@ -52,8 +61,11 @@ TargetFocus targetBottomNavigation2(GlobalKey<State<StatefulWidget>> keyTarget, 
               Padding(
                   padding: const EdgeInsets.all(30),
                   child: Text(
-                    stateApp == StateAplication.complement ? "Aquí podrá ver el historial de sus trámites" : "Aquí podrá ver sus préstamos",
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    stateApp == StateAplication.complement
+                        ? "Aquí podrá ver el historial de sus trámites"
+                        : "Aquí podrá ver sus préstamos",
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   )),
               Transform.rotate(
                 angle: math.pi / 7,
@@ -71,6 +83,43 @@ TargetFocus targetBottomNavigation2(GlobalKey<State<StatefulWidget>> keyTarget, 
   );
 }
 
+TargetFocus targetCalculator(
+    GlobalKey<State<StatefulWidget>> keyTarget, StateAplication stateApp) {
+  return TargetFocus(
+      identify: "keyCalculator",
+      keyTarget: keyTarget,
+      alignSkip: Alignment.topRight,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          builder: (context, controller) {
+            return Column(
+              verticalDirection: VerticalDirection.down,
+              children: <Widget>[
+                Padding(
+                    padding: const EdgeInsets.all(30),
+                    child: Text(
+                      stateApp == StateAplication.complement
+                          ? ""
+                          : "CALCULADORA\nPara calcular su proximo endeudameiento",
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    )),
+                Transform.rotate(
+                  angle: math.pi / 7,
+                  child: Image.asset(
+                    'assets/images/arrow.png',
+                    color: Colors.white,
+                    height: 100,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ]);
+}
+
 TargetFocus targetCreateProcedure(GlobalKey<State<StatefulWidget>> keyTarget) {
   return TargetFocus(
     identify: "keyCreateProcedure",
@@ -86,7 +135,8 @@ TargetFocus targetCreateProcedure(GlobalKey<State<StatefulWidget>> keyTarget) {
                   padding: EdgeInsets.all(30),
                   child: Text(
                     "Para crear su trámite debe presionar el botón CREAR TRÁMITE, cuando se encuentre en color verde",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   )),
               Transform(
                   alignment: Alignment.center,
@@ -123,25 +173,26 @@ TargetFocus targetNotification(GlobalKey<State<StatefulWidget>> keyTarget) {
           return Column(
             children: <Widget>[
               Transform.rotate(
-                angle: math.pi / 7,
-                child: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationY(180),
-                  child: RotationTransition(
-                      turns: const AlwaysStoppedAnimation(120 / 180),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Image.asset(
-                          'assets/images/arrow.png',
-                          color: Colors.white,
-                          height: 80,
-                        ),
-                      )))),
+                  angle: math.pi / 7,
+                  child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(180),
+                      child: RotationTransition(
+                          turns: const AlwaysStoppedAnimation(120 / 180),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Image.asset(
+                              'assets/images/arrow.png',
+                              color: Colors.white,
+                              height: 80,
+                            ),
+                          )))),
               const Padding(
                   padding: EdgeInsets.all(30),
                   child: Text(
                     "BUZÓN DE NOTIFICACIONES\nAquí podrá observar todos los mensajes enviados por la MUSERPOL",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   )),
             ],
           );
@@ -163,7 +214,8 @@ TargetFocus targetMenu(GlobalKey<State<StatefulWidget>> keyTarget) {
                 padding: EdgeInsets.all(30),
                 child: Text(
                   "MENÚ\nAquí podrá ingresar al menú de datos y configuraciones",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 )),
             RotationTransition(
                 turns: const AlwaysStoppedAnimation(100 / 180),
@@ -194,7 +246,8 @@ TargetFocus targetRefresh(GlobalKey<State<StatefulWidget>> keyTarget) {
                 padding: EdgeInsets.all(30),
                 child: Text(
                   "ACTUALIZAR\nPresionando este botón usted podrá actualizar la pantalla",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 )),
             Transform(
                 alignment: Alignment.center,
