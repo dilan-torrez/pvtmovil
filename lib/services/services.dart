@@ -74,3 +74,13 @@ String serviceLoans(int affiliateId)=> '$hostSTI/app/get_information_loan/$affil
 String servicePrintLoans(int loanId)=> '$hostSTI/app/loan/$loanId/print/plan';
 //PRINT KARDEX
 String servicePrintKadex(int loanId)=>'$hostSTI/app/loan/$loanId/print/kardex';
+
+
+//////////////////////////////////////////////////
+/////////////CALCULADORA/////////////////////
+////////////////////////////////////////////////
+String newCalculator() => '$hostSTI/app/information_calculator/';
+String listModalities() => '$hostSTI/app/listModalities/';
+String calculatorLoan() => '$hostSTI/app/newCalculatorLoan/';
+String modalitiesSelect(int idAffiliate, String idModalities) =>
+    '$hostSTI/app/CalculatorLoan/$idAffiliate/$idModalities';

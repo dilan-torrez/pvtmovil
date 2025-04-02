@@ -11,13 +11,15 @@ class NavigationDown extends StatelessWidget {
   final Function(int) onTap;
   final GlobalKey keyBottomNavigation1;
   final GlobalKey keyBottomNavigation2;
+  final GlobalKey keyBottomNavigation3;
   const NavigationDown(
       {super.key,
       required this.stateApp,
       required this.currentIndex,
       required this.onTap,
       required this.keyBottomNavigation1,
-      required this.keyBottomNavigation2});
+      required this.keyBottomNavigation2,
+      required this.keyBottomNavigation3});
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,15 @@ class NavigationDown extends StatelessWidget {
                   width: MediaQuery.of(context).size.width / 4,
                 ),
               )),
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    key: keyBottomNavigation3,
+                    height: 40,
+                    width: MediaQuery.of(context).size.width / 4,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -98,6 +109,20 @@ class NavigationDown extends StatelessWidget {
                         BlendMode.srcIn),
                   ),
                   label: "Préstamos"),
+            if (stateApp == StateAplication.virtualOficine)
+              CurvedNavigationBarItem(
+                  icon: SvgPicture.asset(
+                    'assets/icons/calculator.svg',
+                    height: 25.sp,
+                    colorFilter: ColorFilter.mode(
+                        AdaptiveTheme.of(context).mode.isDark
+                            ? Colors.white
+                            : currentIndex == 2
+                                ? Colors.black
+                                : Colors.white,
+                        BlendMode.srcIn),
+                  ),
+                  label: "Calculadora"),
           ],
           animationCurve: Curves.fastOutSlowIn,
           onTap: (i) => onTap(i),

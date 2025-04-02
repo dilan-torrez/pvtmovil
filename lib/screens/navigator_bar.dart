@@ -22,6 +22,7 @@ import 'package:muserpol_pvt/screens/pages/complement/procedure.dart';
 import 'package:muserpol_pvt/screens/pages/menu.dart';
 import 'package:muserpol_pvt/screens/pages/virtual_officine/contibutions/contribution.dart';
 import 'package:muserpol_pvt/screens/pages/virtual_officine/loans/loan.dart';
+import 'package:muserpol_pvt/screens/pages/virtual_officine/calculators/calculator.dart';
 import 'package:muserpol_pvt/services/auth_service.dart';
 import 'package:muserpol_pvt/services/service_method.dart';
 import 'package:muserpol_pvt/services/services.dart';
@@ -51,6 +52,7 @@ class _NavigatorBarState extends State<NavigatorBar> {
 
   GlobalKey keyBottomNavigation1 = GlobalKey();
   GlobalKey keyBottomNavigation2 = GlobalKey();
+  GlobalKey keyBottomNavigation3 = GlobalKey();
   GlobalKey keyBottomHeader = GlobalKey();
   GlobalKey keyCreateProcedure = GlobalKey();
   GlobalKey keyNotification = GlobalKey();
@@ -121,7 +123,6 @@ class _NavigatorBarState extends State<NavigatorBar> {
       }
       processingState.updateStateProcessing(false);
       procedureBloc.add(ClearProcedures());
-      // procedureBloc.add(Clear);
       setState(() {
         pageCurrent = 1;
         pageHistory = 1;
@@ -256,6 +257,11 @@ class _NavigatorBarState extends State<NavigatorBar> {
     }
   }
 
+  // getCalculator() async {
+  //   final authService = Provider.of<AuthService>(context, listen: false);
+  //   final calculatorBloc = BlocProvider.value(value: value);
+  // }
+
   @override
   Widget build(BuildContext context) {
     if (widget.stateApp == StateAplication.complement) {
@@ -274,13 +280,14 @@ class _NavigatorBarState extends State<NavigatorBar> {
     if (widget.stateApp == StateAplication.virtualOficine) {
       pageList = [
         ScreenContributions(keyNotification: keyNotification),
-        ScreenPageLoans(keyNotification: keyNotification)
+        ScreenPageLoans(keyNotification: keyNotification),
+        ScreenCalculator(keyNotification: keyNotification),
       ];
     }
     return PopScope(
       canPop:
-          false, // Evita que el usuario cierre la app con el botón de retroceso
-      onPopInvokedWithResult: (didPop, _) async {
+          false, // Evita que el usuario cierre la pantalla con el botón de retroceso
+      onPopInvoked: (didPop) async {
         if (didPop) return;
         bool exitApp = await _onBackPressed();
         if (exitApp) {
@@ -308,6 +315,7 @@ class _NavigatorBarState extends State<NavigatorBar> {
               currentIndex: _currentIndex,
               keyBottomNavigation1: keyBottomNavigation1,
               keyBottomNavigation2: keyBottomNavigation2,
+              keyBottomNavigation3: keyBottomNavigation3,
               onTap: (i) => setState(() => _currentIndex = i),
             ),
           ],
@@ -371,7 +379,7 @@ class _NavigatorBarState extends State<NavigatorBar> {
 
   onSkip() async {
     debugPrint("skip");
-    setState(() => stateLoadTutorial = !stateLoadTutorial!);
+    setState(() => stateLoadTutorial = stateLoadTutorial!);
     if (await checkVersion(mounted, context)) {
       if (widget.stateApp == StateAplication.complement) {
         getEconomicComplement(true);
@@ -388,6 +396,7 @@ class _NavigatorBarState extends State<NavigatorBar> {
     targets.clear();
     targets.add(targetBottomNagigation1(keyBottomNavigation1, widget.stateApp));
     targets.add(targetBottomNavigation2(keyBottomNavigation2, widget.stateApp));
+    targets.add(targetCalculator(keyBottomNavigation3, widget.stateApp));
     if (widget.stateApp == StateAplication.complement) {
       targets.add(targetCreateProcedure(keyCreateProcedure));
     }
