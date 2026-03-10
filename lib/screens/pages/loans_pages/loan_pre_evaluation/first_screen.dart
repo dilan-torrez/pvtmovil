@@ -202,7 +202,7 @@ class _FirstScreenState extends State<FirstScreen> with WidgetsBindingObserver {
                         width: 64,
                         height: 64,
                         decoration: BoxDecoration(
-                          color: Colors.white.withAlpha(51),
+                          color: Colors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.warning_amber_rounded,
@@ -690,12 +690,12 @@ class _FirstScreenState extends State<FirstScreen> with WidgetsBindingObserver {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: _liquidoParaCalificacion >= 0
-                  ? const Color(0xff419388).withAlpha(26)
+                  ? const Color(0xff419388).withValues(alpha: 0.1)
                   : Colors.red.shade50,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: _liquidoParaCalificacion >= 0
-                    ? const Color(0xff419388).withAlpha(77)
+                    ? const Color(0xff419388).withValues(alpha: 0.3)
                     : Colors.red.shade200,
               ),
             ),
@@ -887,12 +887,12 @@ class _FirstScreenState extends State<FirstScreen> with WidgetsBindingObserver {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: _liquidoParaCalificacion >= 0
-                    ? const Color(0xff419388).withAlpha(26)
+                    ? const Color(0xff419388).withValues(alpha: 0.1)
                     : Colors.red.shade50,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: _liquidoParaCalificacion >= 0
-                      ? const Color(0xff419388).withAlpha(77)
+                      ? const Color(0xff419388).withValues(alpha: 0.3)
                       : Colors.red.shade200,
                 ),
               ),
