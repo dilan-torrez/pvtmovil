@@ -22,7 +22,7 @@ class EvaluationWidgets {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF80CBC4).withAlpha(60),
+            color: const Color(0xFF80CBC4).withValues(alpha: 0.23),
             blurRadius: 15,
             offset: const Offset(0, 5),
           )
@@ -50,7 +50,7 @@ class EvaluationWidgets {
             Text(
               subtitle,
               style: TextStyle(
-                color: const Color(0xFF00695C).withAlpha(230),
+                color: const Color(0xFF00695C).withValues(alpha: 0.9),
                 fontSize: 15.sp,
               ),
               textAlign: TextAlign.center,
@@ -77,13 +77,13 @@ class EvaluationWidgets {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(20),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 15,
             offset: const Offset(0, 5),
           )
         ],
         border: Border.all(
-          color: const Color(0xff419388).withAlpha(77),
+          color: const Color(0xff419388).withValues(alpha: 0.30),
           width: 2,
         ),
       ),
@@ -117,7 +117,7 @@ class EvaluationWidgets {
             borderRadius: BorderRadius.circular(16),
           ),
           elevation: 4,
-          shadowColor: const Color(0xff419388).withAlpha(102),
+          shadowColor: const Color(0xff419388).withValues(alpha: 0.4),
           disabledBackgroundColor: Colors.grey.shade400,
         ),
         child: Row(
@@ -175,7 +175,7 @@ class EvaluationWidgets {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withAlpha(13),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               )
@@ -234,7 +234,8 @@ class EvaluationWidgets {
     Color? textColor,
     bool isHighlighted = false,
   }) {
-    final bgColor = backgroundColor ?? const Color(0xff419388).withAlpha(26);
+    final bgColor =
+        backgroundColor ?? const Color(0xff419388).withValues(alpha: 0.1);
     final txtColor = textColor ?? const Color(0xff2d6b61);
 
     return Container(
@@ -244,7 +245,7 @@ class EvaluationWidgets {
         color: bgColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xff419388).withAlpha(77),
+          color: const Color(0xff419388).withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -298,7 +299,7 @@ class EvaluationWidgets {
         border: Border.all(color: Colors.red.shade300, width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.red.withAlpha(51),
+            color: Colors.red.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -372,12 +373,12 @@ class EvaluationWidgets {
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: const Color(0xff419388).withAlpha(77),
+          color: const Color(0xff419388).withValues(alpha: 0.3),
           width: 3,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xff419388).withAlpha(77),
+            color: const Color(0xff419388).withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           )
@@ -388,10 +389,10 @@ class EvaluationWidgets {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withAlpha(38),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.white.withAlpha(77),
+                color: Colors.white.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -406,7 +407,7 @@ class EvaluationWidgets {
                       'CUOTA ${paymentFrequency.toUpperCase()}',
                       style: TextStyle(
                         fontSize: 14.sp,
-                        color: Colors.white.withAlpha(242),
+                        color: Colors.white.withValues(alpha: 0.95),
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1,
                       ),
@@ -429,7 +430,7 @@ class EvaluationWidgets {
                   'Bolivianos',
                   style: TextStyle(
                     fontSize: 13.sp,
-                    color: Colors.white.withAlpha(204),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -440,7 +441,7 @@ class EvaluationWidgets {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withAlpha(38),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -501,7 +502,7 @@ class EvaluationWidgets {
             ),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFF80CBC4).withAlpha(100),
+              color: const Color(0xFF80CBC4).withValues(alpha: 0.39),
               width: 2,
             ),
           ),
@@ -539,7 +540,7 @@ class EvaluationWidgets {
                 'Bolivianos',
                 style: TextStyle(
                   fontSize: 13.sp,
-                  color: const Color(0xFF00695C).withAlpha(204),
+                  color: const Color(0xFF00695C).withValues(alpha: 0.8),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -607,14 +608,14 @@ class EvaluationWidgets {
   }) {
     return Row(
       children: [
-        Icon(icon, color: Colors.white.withAlpha(230), size: 20),
+        Icon(icon, color: Colors.white.withValues(alpha: 0.9), size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             label,
             style: TextStyle(
               fontSize: 16.sp,
-              color: Colors.white.withAlpha(204),
+              color: Colors.white.withValues(alpha: 0.8),
               fontWeight: FontWeight.w500,
             ),
           ),
