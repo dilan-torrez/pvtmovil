@@ -810,11 +810,6 @@ class EvaluationWidgets {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildModalityInfoRow(
-                Icons.attach_money,
-                'Monto',
-                'hasta ${EvaluationService.formatMoney(modality.parameters.maximumAmountModality)} Bs',
-              ),
-              _buildModalityInfoRow(
                 Icons.percent,
                 'Interés Anual',
                 '${modality.parameters.annualInterest.toStringAsFixed(2)}%',
@@ -855,24 +850,12 @@ class EvaluationWidgets {
           children: [
             Expanded(
               child: _buildModalityInfoCell(
-                Icons.attach_money,
-                'Monto',
-                'hasta ${EvaluationService.formatMoney(modality.parameters.maximumAmountModality)} Bs',
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildModalityInfoCell(
                 Icons.percent,
                 'Interés Anual',
                 '${modality.parameters.annualInterest.toStringAsFixed(2)}%',
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
+            const SizedBox(width: 12),
             Expanded(
               child: _buildModalityInfoCell(
                 Icons.people,
@@ -880,15 +863,13 @@ class EvaluationWidgets {
                 '${modality.parameters.guarantors}',
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildModalityInfoCell(
-                Icons.calendar_today,
-                'Plazo',
-                '${modality.parameters.minimumTermModality}-${modality.parameters.maximumTermModality} ${EvaluationService.getTermType(modality.parameters.loanMonthTerm)}',
-              ),
-            ),
           ],
+        ),
+        const SizedBox(height: 12),
+        _buildModalityInfoCell(
+          Icons.calendar_today,
+          'Plazo',
+          '${modality.parameters.minimumTermModality}-${modality.parameters.maximumTermModality} ${EvaluationService.getTermType(modality.parameters.loanMonthTerm)}',
         ),
       ],
     );

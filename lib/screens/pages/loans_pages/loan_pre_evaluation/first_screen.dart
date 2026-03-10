@@ -238,7 +238,7 @@ class _FirstScreenState extends State<FirstScreen> with WidgetsBindingObserver {
                         child: Column(
                           children: [
                             Text(
-                              'Esta evaluación es solo referencial sin considerar los prestamos que este garantizando; '
+                              'Esta evaluación es solo referencial sin considerar los préstamos que este garantizando y no es aplicable para préstamos paralelos; '
                               'para iniciar la solicitud formal del préstamo debes realizarlo de manera presencial en las oficinas de la MUSERPOL a nivel nacional.',
                               style: TextStyle(
                                 fontSize: 16.sp,
