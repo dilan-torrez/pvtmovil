@@ -53,6 +53,16 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
+  // Configuración Edge-to-Edge para Android 15
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.dark,
+    statusBarIconBrightness: Brightness.dark,
+  ));
+
+
   // Carga .env
   await dotenv.load(fileName: ".env");
 
