@@ -6,6 +6,7 @@ List<TargetFocus> getTutorialTargets({
   required GlobalKey keyComplemento,
   required GlobalKey keyAportes,
   required GlobalKey keyPrestamos,
+  required GlobalKey keyBeneficios,
 }) {
   return [
     TargetFocus(
@@ -59,6 +60,20 @@ List<TargetFocus> getTutorialTargets({
           align: ContentAlign.bottom,
           child: const Text(
             'Mira tu historial de préstamos.',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
+    ),
+    TargetFocus(
+      keyTarget: keyBeneficios,
+      shape: ShapeLightFocus.RRect,
+      radius: 16,
+      contents: [
+        TargetContent(
+          align: ContentAlign.bottom,
+          child: const Text(
+            'Mira tus beneficios aquí.',
             style: TextStyle(color: Colors.white),
           ),
         ),
