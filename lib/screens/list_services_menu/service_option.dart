@@ -31,7 +31,7 @@ class ServiceOption extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: isDarkMode ? _kDarkBg : _kPrimaryGreen,
+            color: isDarkMode ? const Color(0xff1e3d37) : _kPrimaryGreen,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -73,7 +73,7 @@ class ServiceOption extends StatelessWidget {
                     vertical: 14,
                   ),
                   decoration: BoxDecoration(
-                    color: isDarkMode ? const Color(0xff1a3530) : Colors.white,
+                    color: isDarkMode ? const Color(0xff2a4f49) : Colors.white,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Column(
@@ -84,7 +84,7 @@ class ServiceOption extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 21.sp,
-                          color: _kPrimaryGreen,
+                          color: isDarkMode ? Colors.white : _kPrimaryGreen,
                         ),
                       ),
                       const SizedBox(height: 6),

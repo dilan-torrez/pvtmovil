@@ -5,6 +5,7 @@ import 'package:muserpol_pvt/model/saved_loan_evaluation.dart';
 import 'package:muserpol_pvt/services/evaluation_service.dart';
 
 import 'package:muserpol_pvt/bloc/loan_pre_evaluation/loan_pre_evaluation_bloc.dart';
+import 'package:muserpol_pvt/utils/logger.dart'; // SEGURIDAD: Import para logging seguro
 import 'package:muserpol_pvt/bloc/user/user_bloc.dart';
 import 'package:muserpol_pvt/screens/pages/loans_pages/loan_pre_evaluation/calculation_result_screen.dart';
 
@@ -87,7 +88,8 @@ class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
         }
       }
     } catch (e) {
-      print('Error al limpiar evaluaciones obsoletas: $e');
+      // SEGURIDAD: Uso de AppLog para evitar registros en producción
+      AppLog.d('Error al limpiar evaluaciones obsoletas: $e');
     }
   }
 

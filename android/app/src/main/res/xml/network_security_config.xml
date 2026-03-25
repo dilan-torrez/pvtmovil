@@ -2,7 +2,10 @@
 <network-security-config>
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
+            <!-- Solo se confía en certificados del sistema, no de usuario -->
             <certificates src="system" />
         </trust-anchors>
     </base-config>
+    <!-- Configuración para dominios específicos si fuera necesario más adelante -->
+
 </network-security-config>

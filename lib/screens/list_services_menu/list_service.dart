@@ -203,13 +203,14 @@ class _ScreenListServiceState extends State<ScreenListService> {
         description: 'Seguimiento de trámites y evaluación referencial.',
         onPressed: () => _goToModule(2),
       ),
-      _ServiceData(
-        key: keyBeneficios,
-        image: 'assets/images/icon_retFund.png',
-        title: 'Fondo de Retiro y Cuota Auxilio Mortuorio',
-        description: 'Seguimiento de fondo de retiro.',
-        onPressed: () => _goToModule(3),
-      ),
+      if (false) // Logic ready for future
+        _ServiceData(
+          key: keyBeneficios,
+          image: 'assets/images/icon_retFund.png',
+          title: 'Fondo de Retiro y Cuota Auxilio Mortuorio',
+          description: 'Seguimiento de fondo de retiro.',
+          onPressed: () => _goToModule(3),
+        ),
     ];
 
     return PopScope(
@@ -364,7 +365,7 @@ class ServiceGridItem extends StatelessWidget {
       onTap: service.onPressed,
       child: Container(
         decoration: BoxDecoration(
-          color: isDarkMode ? kDarkBg : kPrimaryGreen,
+          color: isDarkMode ? const Color(0xff2a4f49) : kPrimaryGreen,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(

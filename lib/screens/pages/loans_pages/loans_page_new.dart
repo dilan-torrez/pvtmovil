@@ -13,6 +13,7 @@ import 'package:muserpol_pvt/screens/pages/loans_pages/loan_pre_evaluation/saved
 import 'package:muserpol_pvt/services/auth_service.dart';
 import 'package:muserpol_pvt/services/service_method.dart';
 import 'package:muserpol_pvt/services/services.dart';
+import 'package:muserpol_pvt/utils/logger.dart'; // SEGURIDAD: Import para logging seguro
 import 'package:provider/provider.dart';
 
 class ScreenLoansNew extends StatefulWidget {
@@ -156,10 +157,12 @@ class _ScreenLoansNewState extends State<ScreenLoansNew> {
       final loanBloc = BlocProvider.of<LoanBloc>(context, listen: false);
 
       if (loanBloc.state.existLoan && loanBloc.state.loan != null) {
-        print('Verificando evaluaciones guardadas...');
+        // SEGURIDAD: Uso de AppLog para evitar registros en producción
+        AppLog.d('Verificando evaluaciones guardadas...');
       }
     } catch (e) {
-      print('Error al verificar evaluaciones: $e');
+      // SEGURIDAD: Uso de AppLog para evitar registros en producción
+      AppLog.d('Error al verificar evaluaciones: $e');
     }
   }
 

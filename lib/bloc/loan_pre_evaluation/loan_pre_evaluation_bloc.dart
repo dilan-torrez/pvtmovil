@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../model/loan_pre_evaluation_model.dart';
 import '../../services/service_method.dart';
+import 'package:muserpol_pvt/utils/logger.dart'; // SEGURIDAD: Import para logging seguro
 import '../../services/services.dart';
 
 part 'loan_pre_evaluation_event.dart';
@@ -103,7 +104,8 @@ class LoanPreEvaluationBloc
           currentAttempt: retryCount + 1, maxAttempts: maxRetries));
 
       try {
-        debugPrint(
+        // SEGURIDAD: Uso de AppLog para evitar registros en producción
+        AppLog.d(
             'Intento ${retryCount + 1} de $maxRetries para cargar modalidades');
 
         final response = await serviceMethod(
@@ -160,7 +162,8 @@ class LoanPreEvaluationBloc
                 if (_validateModalityStructure(item)) {
                   validModalities.add(item);
                 } else {
-                  debugPrint(
+                  // SEGURIDAD: Uso de AppLog para evitar registros en producción
+        AppLog.d(
                       'Modalidad $i tiene estructura inválida, se omite');
                 }
               } else {
@@ -183,13 +186,15 @@ class LoanPreEvaluationBloc
               return;
             }
 
-            debugPrint(
+            // SEGURIDAD: Uso de AppLog para evitar registros en producción
+        AppLog.d(
                 'Modalidades cargadas exitosamente: ${modalitiesResponse.modalities.length}');
             emit(LoanModalitiesLoaded(modalitiesResponse.modalities));
             return; // Éxito, salir del bucle de reintentos
           } catch (jsonError) {
             debugPrint('Error parsing JSON: $jsonError');
-            debugPrint(
+            // SEGURIDAD: Uso de AppLog para evitar registros en producción
+        AppLog.d(
                 'Response body that failed: ${response.body.substring(0, response.body.length > 500 ? 500 : response.body.length)}...');
             throw Exception(
                 'Error al procesar la respuesta del servidor: ${jsonError.toString()}');
@@ -306,7 +311,8 @@ class LoanPreEvaluationBloc
           }
         } else {
           // No hay contribuciones disponibles: fallback a modalidad sin contribuciones
-          debugPrint(
+          // SEGURIDAD: Uso de AppLog para evitar registros en producción
+        AppLog.d(
               'Contribuciones no disponibles: ${contributionsResponse.message}');
           if (currentModalities != null) {
             // Mantener las modalidades y permitir edición local de cotizable
@@ -318,7 +324,8 @@ class LoanPreEvaluationBloc
         }
       } else {
         // No se recibió respuesta de contribuciones: si ya tenemos modalidades, seguir con ellas sin contribuciones
-        debugPrint(
+        // SEGURIDAD: Uso de AppLog para evitar registros en producción
+        AppLog.d(
             'No se recibió respuesta de contribuciones, usando modalidad sin contribuciones');
         if (currentModalities != null) {
           emit(LoanModalitiesWithContributionsLoaded(currentModalities, null));
