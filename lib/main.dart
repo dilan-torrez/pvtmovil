@@ -21,7 +21,6 @@ import 'package:muserpol_pvt/swipe/slider.dart';
 import 'package:muserpol_pvt/utils/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'bloc/notification/notification_bloc.dart';
-import 'firebase_options.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muserpol_pvt/check_auth_screen.dart';
 import 'package:muserpol_pvt/services/auth_service.dart';
@@ -31,29 +30,63 @@ import 'bloc/user/user_bloc.dart';
 import 'provider/app_state.dart';
 import 'screens/contacts/screen_contact.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:muserpol_pvt/firebase_options.dart';
 
-class MyHttpOverrides extends HttpOverrides {
+/// ---------------------------------------------------------
+/// 1. CONFIGURACIÓN DE SEGURIDAD (LISTA BLANCA HTTP)
+/// ---------------------------------------------------------
+class SecureHttpOverrides extends HttpOverrides {
+  final List<String> whitelistedHosts;
+
+  SecureHttpOverrides(this.whitelistedHosts);
+
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) {
+        // Si el host está en la lista blanca del .env, permitimos la conexión
+        final isAllowed = whitelistedHosts.contains(host);
+        if (isAllowed) {
+          debugPrint(
+              '⚠️ SECURITY BYPASS: Permitiendo conexión insegura a $host');
+          return true;
+        }
+        // Para el resto, rechazamos certificados inválidos
+        return false;
+      };
   }
 }
 
 SharedPreferences? prefs;
 
+/// ---------------------------------------------------------
+/// 2. FUNCIÓN MAIN
+/// ---------------------------------------------------------
 Future<void> main() async {
   // Asegura binding
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Bloquea orientación una sola vez (no en cada build)
+  // Cargar variables de entorno
+  await dotenv.load(fileName: ".env");
+
+  // Configuración de Seguridad HTTP (Lista Blanca)
+  // Leemos la variable ALLOW_INSECURE_HOSTS del .env
+  final insecureHostsRaw = dotenv.env['ALLOW_INSECURE_HOSTS'] ?? '';
+  final insecureHostsList = insecureHostsRaw
+      .split(',')
+      .map((e) => e.trim())
+      .where((e) => e.isNotEmpty)
+      .toList();
+
+  // Aplicamos el override personalizado
+  HttpOverrides.global = SecureHttpOverrides(insecureHostsList);
+
+  // Configuración de Orientación y UI
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // Configuración Edge-to-Edge para Android 15
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -62,34 +95,25 @@ Future<void> main() async {
     statusBarIconBrightness: Brightness.dark,
   ));
 
-  // Carga .env
-  await dotenv.load(fileName: ".env");
+  // Inicializar Firebase
+  // Usamos la variable importada desde firebase_config.dart
+  await Firebase.initializeApp(options: firebaseOptionsFromEnv);
 
-  // Http override global
-  HttpOverrides.global = MyHttpOverrides();
-
-  // Lanzamos algunas cosas en paralelo: tema y SharedPreferences
-  final savedThemeModeFuture = AdaptiveTheme.getThemeMode();
-  final prefsFuture = SharedPreferences.getInstance();
-
-  // Inicializa Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  // Handler de mensajes en background (debe ser top-level)
+  // Configuración de Notificaciones
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
-  // Inicializa tu servicio de notificaciones (usa FirebaseMessaging)
   await PushNotificationService.initializeapp();
 
-  // Esperamos resultados de tema y prefs (que ya se iban cargando)
-  final savedThemeMode = await savedThemeModeFuture;
-  prefs = await prefsFuture;
+  // Cargar preferencias y tema
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+  prefs = await SharedPreferences.getInstance();
 
-  // Arranca la app
+  // Arrancar la app
   runApp(MyApp(savedThemeMode: savedThemeMode));
 }
+
+/// ---------------------------------------------------------
+/// 3. WIDGETS DE LA APLICACIÓN
+/// ---------------------------------------------------------
 
 class MyApp extends StatelessWidget {
   final AdaptiveThemeMode? savedThemeMode;
@@ -146,7 +170,6 @@ class _MuserpolState extends State<Muserpol> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // Foreground / cuando abren la app desde la notificación
     PushNotificationService.messagesStream.listen((message) {
       debugPrint('NO TI FI CA CION $message');
       final msg = json.decode(message);

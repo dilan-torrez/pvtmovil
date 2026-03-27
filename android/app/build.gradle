@@ -79,6 +79,12 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release // Firma la app en modo release
+
+            // --- CONFIGURACIÓN R8 ---
+            minifyEnabled true       // Activa R8 para ofuscar y optimizar
+            shrinkResources true     // Elimina recursos no usados
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // ----------------------------------------
         }
     }
 
