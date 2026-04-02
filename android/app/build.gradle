@@ -3,6 +3,7 @@ plugins {
     id "com.android.application" // Plugin base para apps Android
     id "kotlin-android"          // Para usar Kotlin
     id "dev.flutter.flutter-gradle-plugin" // Plugin para compilar con Flutter
+    id "com.google.gms.google-services" // Plugin de Google Services para Firebase
 }
 
 // Cargar propiedades del archivo local.properties
@@ -53,7 +54,7 @@ android {
 
     defaultConfig {
         applicationId "com.muserpol.pvt" // ID ÚNICO de la app (IMPORTANTE para Play Store)
-        minSdkVersion 29                 // Mínimo Android soportado (Actualizado por seguridad)
+        minSdkVersion 24                 // Mínimo Android soportado (Actualizado por seguridad)
         targetSdkVersion 36            // Target Android (recomendado: siempre lo último)
         versionCode 79                 // Código de versión (debe INCREMENTAR en cada subida)
         versionName "4.1.3"            // Nombre visible de la versión (para usuarios)
@@ -101,12 +102,12 @@ flutter {
 
 // Dependencias necesarias
 dependencies {
-    // Dependencias de Firebase
-    implementation platform('com.google.firebase:firebase-bom:30.3.2')
-    implementation 'com.google.firebase:firebase-analytics-ktx'
+    // Dependencias de Firebase (sin BOM para evitar problemas de resolución)
+    implementation 'com.google.firebase:firebase-analytics-ktx:22.1.2'
+    implementation 'com.google.firebase:firebase-messaging-ktx:24.1.0'
 
     // Soporte para multidex
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.google.mlkit:text-recognition:16.0.0'
 
 }

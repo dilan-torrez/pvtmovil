@@ -40,7 +40,7 @@ class SendMessageLogin extends StatefulWidget {
 
 class _SendMessageLogin extends State<SendMessageLogin> {
   final double containerWidth = 320.w;
-  final TextEditingController codeCtrl = TextEditingController();
+  final PinInputController codeCtrl = PinInputController();
   final FocusNode node = FocusNode();
   Timer? countdownTimer;
   int remainingSeconds = 180;
@@ -123,7 +123,7 @@ class _SendMessageLogin extends State<SendMessageLogin> {
 
       if (code.length == 4) {
         setState(() {
-          codeCtrl.text = code;
+          codeCtrl.setText(code);
         });
       } else {
         debugPrint('No se capturó un código válido.');
@@ -191,41 +191,32 @@ class _SendMessageLogin extends State<SendMessageLogin> {
                                             : Colors.black,
                                       ))),
                               SizedBox(height: 30.h),
-                              PinCodeTextField(
-                                appContext: context,
+                              MaterialPinField(
+                                pinController: codeCtrl,
                                 length: 4,
                                 onChanged: (value) {},
                                 onCompleted: (value) {
                                   FocusScope.of(context).unfocus();
                                 },
-                                controller: codeCtrl,
-                                focusNode: node,
-                                autoDisposeControllers: false,
                                 keyboardType: TextInputType.number,
-                                cursorColor: Colors.transparent,
-                                pinTheme: PinTheme(
-                                  inactiveColor: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
-                                  activeColor: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
-                                  selectedColor: const Color(0xff419388),
-                                  selectedFillColor: const Color(0xff419388),
-                                  inactiveFillColor: Colors.transparent,
-                                  shape: PinCodeFieldShape.box,
+                                theme: MaterialPinTheme(
+                                  cellSize: const Size(60, 60),
+                                  shape: MaterialPinShape.outlined,
                                   borderRadius: BorderRadius.circular(5),
-                                  activeFillColor: AdaptiveTheme.of(context)
+                                  borderColor: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                                  focusedBorderColor: const Color(0xff419388),
+                                  filledBorderColor: const Color(0xff419388),
+                                  fillColor: Colors.transparent,
+                                  focusedFillColor: AdaptiveTheme.of(context)
                                       .theme
                                       .scaffoldBackgroundColor,
-                                  fieldHeight: 60,
-                                  fieldWidth: 60,
+                                  showCursor: false,
+                                  animationDuration:
+                                      const Duration(milliseconds: 300),
                                 ),
-                                animationDuration:
-                                    const Duration(milliseconds: 300),
-                                enableActiveFill: true,
                               ),
                               SizedBox(height: 30.h),
                               ButtonComponent(

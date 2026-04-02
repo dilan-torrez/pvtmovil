@@ -99,11 +99,8 @@ class _ScreenFormLoginState extends State<ScreenFormLogin> {
             const AndroidAuthMessages(
               signInTitle: 'Autenticación Biometrica',
               cancelButton: 'No Gracias',
-              biometricHint: 'Verificar Identidad',
             ),
-          ],
-          options: const AuthenticationOptions(
-              stickyAuth: true, biometricOnly: true));
+          ]);
     } on PlatformException catch (e) {
       debugPrint('$e');
       return;
