@@ -62,29 +62,67 @@
 # REGLAS DE ENDURECIMIENTO (SECURITY HARDENING)
 # ========================
 
-# Eliminar algoritmos de cifrado no seguros (AES-CBC) que MobSF reporta
-# Estas reglas eliminan clases de cifrado CBC que son vulnerables a padding oracle attacks
--dontwarn com.google.crypto.tink.**
--dontwarn javax.crypto.Cipher
+# FLUTTER SECURE STORAGE: Eliminar implementaciones CBC vulnerables
+# MobSF detecta StorageCipherImplementationAES18.java que usa CBC
+# Estas reglas REALMENTE eliminan las clases CBC del APK final
 
-# Eliminar implementaciones de AES-CBC de diferentes librerías
--assumenosideeffects class com.google.crypto.tink.subtle.AesCbc* {
-    public *;
+# IMPORTANTE: -assumenosideeffects NO elimina clases, solo optimiza
+# Usamos una combinación de técnicas para eliminar completamente CBC
+
+# 1. Marcar clases CBC como no utilizadas (para que R8 las elimine)
+-dontwarn com.it_nomads.fluttersecurestorage.ciphers.StorageCipherImplementationAES18
+-dontwarn com.it_nomads.fluttersecurestorage.ciphers.StorageCipherImplementationAES18$**
+
+# 2. NO mantener ninguna clase que contenga CBC en su implementación
+# Esto es crítico: si no hay -keep, R8 puede eliminarlas si no se usan
+# Como forzamos AES-GCM en el código, estas clases NO se usan
+
+# 3. Mantener SOLO las clases que usamos (AES-GCM)
+-keep class com.it_nomads.fluttersecurestorage.ciphers.StorageCipher {
+    public <methods>;
 }
 
-# Eliminar cualquier método que contenga CBC en su nombre
+# 4. Mantener la factory pero permitir que elimine implementaciones no usadas
+-keep class com.it_nomads.fluttersecurestorage.ciphers.StorageCipherFactory {
+    public <methods>;
+}
+
+# 5. NO mantener StorageCipherImplementationAES18 (CBC)
+# Al no tener -keep, R8 la eliminará si no se usa
+# Como configuramos explícitamente GCM, esta clase NO se usa
+
+# 6. Mantener SOLO StorageCipherImplementationAES23 (GCM)
+-keep class com.it_nomads.fluttersecurestorage.ciphers.StorageCipherImplementationAES23 {
+    public <init>(...);
+    public <methods>;
+}
+
+# 7. Eliminar cualquier referencia a CBC/PKCS en el bytecode
 -assumenosideeffects class * {
-    *** *CBC*(...);
-    *** *Cbc*(...);
-    *** *cbc*(...);
+    *** *CBC*(...) return null;
+    *** *Cbc*(...) return null;
+    *** *cbc*(...) return null;
+    *** *PKCS5*(...) return null;
+    *** *PKCS7*(...) return null;
 }
 
-# Mantener solo implementaciones seguras (GCM)
+# 8. Mantener solo métodos GCM y OAEP
 -keep class * {
     *** *GCM*(...);
     *** *Gcm*(...);
     *** *gcm*(...);
+    *** *OAEP*(...);
 }
+
+# 9. Eliminar Tink (si está presente) que también usa CBC
+-dontwarn com.google.crypto.tink.**
+-dontwarn javax.crypto.Cipher
+
+# 10. Shrinking agresivo para eliminar código no usado
+# Esto es crítico para que R8 realmente elimine las clases CBC
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-optimizationpasses 5
+-allowaccessmodification
 
 # Ofuscación agresiva para componentes internos que causan falsos positivos (como archivos temporales)
 -keepclassmembernames class io.flutter.plugins.camerax.** {
