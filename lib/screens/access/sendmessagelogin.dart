@@ -194,25 +194,20 @@ class _SendMessageLogin extends State<SendMessageLogin> {
                               MaterialPinField(
                                 pinController: codeCtrl,
                                 length: 4,
-                                onChanged: (value) {},
+                                keyboardType: TextInputType.number,
                                 onCompleted: (value) {
                                   FocusScope.of(context).unfocus();
                                 },
-                                keyboardType: TextInputType.number,
                                 theme: MaterialPinTheme(
-                                  cellSize: const Size(60, 60),
+                                  cellSize: Size(75.w, 75.w),
                                   shape: MaterialPinShape.outlined,
-                                  borderRadius: BorderRadius.circular(5),
-                                  borderColor: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderColor: Colors.black,
                                   focusedBorderColor: const Color(0xff419388),
                                   filledBorderColor: const Color(0xff419388),
+                                  borderWidth: 2,
                                   fillColor: Colors.transparent,
-                                  focusedFillColor: AdaptiveTheme.of(context)
-                                      .theme
-                                      .scaffoldBackgroundColor,
+                                  focusedFillColor: Colors.transparent,
                                   showCursor: false,
                                   animationDuration:
                                       const Duration(milliseconds: 300),
@@ -412,7 +407,6 @@ class _SendMessageLogin extends State<SendMessageLogin> {
 
   Future verifyPinNew(code) async {
     if (widget.body['messageId'] == null) {
-    
       return;
     }
 

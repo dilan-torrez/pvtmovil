@@ -35,26 +35,39 @@ class _ModalAceptTerminState extends State<ModalAceptTermin> {
                           children: [
                             btnAccess
                                 ? OptionTermCondition(
-                                    onChanged: (val) => setState(() => stateTermsConditions = !stateTermsConditions),
+                                    onChanged: (val) => setState(() =>
+                                        stateTermsConditions =
+                                            !stateTermsConditions),
                                     state: stateTermsConditions,
                                     child: GestureDetector(
-                                      onTap: () => launchUrl(Uri.parse(serviceGetPrivacyPolicy()), mode: LaunchMode.externalApplication),
+                                      onTap: () => launchUrl(
+                                          Uri.parse(serviceGetPrivacyPolicy()),
+                                          mode: LaunchMode.externalApplication),
                                       child: RichText(
                                           text: TextSpan(children: [
                                         TextSpan(
                                             text: 'Acepto ',
                                             style: TextStyle(
-                                                color: AdaptiveTheme.of(context).theme.primaryColorDark,
+                                                color: AdaptiveTheme.of(context)
+                                                    .theme
+                                                    .primaryColorDark,
                                                 fontFamily: 'Poppins',
                                                 fontSize: 17.sp)),
                                         TextSpan(
                                             text: 'Términos y Condiciones ',
                                             style: TextStyle(
-                                                color: Colors.blue, decoration: TextDecoration.underline, fontFamily: 'Poppins', fontSize: 17.sp)),
+                                                color: Colors.blue,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                fontFamily: 'Poppins',
+                                                fontSize: 17.sp)),
                                         TextSpan(
-                                            text: 'de uso de la aplicación móvil "MUSERPOL PVT"',
+                                            text:
+                                                'de uso de la aplicación móvil "MUSERPOL PVT"',
                                             style: TextStyle(
-                                                color: AdaptiveTheme.of(context).theme.primaryColorDark,
+                                                color: AdaptiveTheme.of(context)
+                                                    .theme
+                                                    .primaryColorDark,
                                                 fontFamily: 'Poppins',
                                                 fontSize: 17.sp))
                                       ])),
@@ -67,12 +80,21 @@ class _ModalAceptTerminState extends State<ModalAceptTermin> {
                                     height: 20,
                                   )),
                             OptionTermCondition(
-                              onChanged: (val) => setState(() => stateNotificationsPush = !stateNotificationsPush),
+                              onChanged: (val) => setState(() =>
+                                  stateNotificationsPush =
+                                      !stateNotificationsPush),
                               state: stateNotificationsPush,
                               child: GestureDetector(
-                                onTap: () => setState(() => stateNotificationsPush = !stateNotificationsPush),
-                                child: Text('Acepto que me envien notificaciones',
-                                    style: TextStyle(fontSize: 17.sp, color: AdaptiveTheme.of(context).theme.primaryColorDark)),
+                                onTap: () => setState(() =>
+                                    stateNotificationsPush =
+                                        !stateNotificationsPush),
+                                child: Text(
+                                    'Acepto que me envien notificaciones',
+                                    style: TextStyle(
+                                        fontSize: 17.sp,
+                                        color: AdaptiveTheme.of(context)
+                                            .theme
+                                            .primaryColorDark)),
                               ),
                             )
                           ],
@@ -80,10 +102,18 @@ class _ModalAceptTerminState extends State<ModalAceptTermin> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child:
-                        ButtonComponent(text: 'INGRESAR', onPressed: stateTermsConditions && stateNotificationsPush ? () => getInto(context) : null),
+                  SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ButtonComponent(
+                        text: 'INGRESAR',
+                        onPressed:
+                            stateTermsConditions && stateNotificationsPush
+                                ? () => getInto(context)
+                                : null,
+                      ),
+                    ),
                   ),
                 ]))));
   }
@@ -101,7 +131,11 @@ class OptionTermCondition extends StatelessWidget {
   final Function(bool) onChanged;
   final bool state;
   final Widget child;
-  const OptionTermCondition({super.key, required this.onChanged, required this.state, required this.child});
+  const OptionTermCondition(
+      {super.key,
+      required this.onChanged,
+      required this.state,
+      required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +147,8 @@ class OptionTermCondition extends StatelessWidget {
                 value: state,
                 activeColor: const Color(0xff419388),
                 splashRadius: 50,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5)),
                 materialTapTargetSize: MaterialTapTargetSize.padded,
                 onChanged: (val) => onChanged(val!))),
         Flexible(child: child)
