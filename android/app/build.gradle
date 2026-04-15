@@ -109,5 +109,9 @@ dependencies {
     // Soporte para multidex
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.google.mlkit:text-recognition:16.0.0'
+    
+    // AndroidX Core para edge-to-edge (Android 15+)
+    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.activity:activity-ktx:1.9.3'
 
 }

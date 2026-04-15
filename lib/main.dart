@@ -87,7 +87,11 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
+  // Habilitar edge-to-edge (compatible con Android 15+)
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  
+  // Configurar barras del sistema transparentes
+  // Nota: En Android 15+, estas configuraciones son manejadas por WindowCompat
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.transparent,
