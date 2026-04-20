@@ -127,13 +127,58 @@ class _ScreenContributionsStateNew extends State<ScreenContributionsNew> {
         biometricUserModelFromJson(await authService.readBiometric());
     setState(() => stateLoading = true);
     if (!mounted) return;
-    var response = await serviceMethod(mounted, context, 'get', null,
-        servicePrintContributionPasive(biometric.affiliateId!), true, false);
-    setState(() => stateLoading = false);
-    if (response != null) {
+    
+    try {
+      var response = await serviceMethod(mounted, context, 'get', null,
+          servicePrintContributionPasive(biometric.affiliateId!), true, false);
+      
+      setState(() => stateLoading = false);
+      
+      if (response == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo obtener el documento')),
+        );
+        return;
+      }
+      
+      // Verificar que tenemos datos válidos
+      if (response.bodyBytes.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se recibieron datos del servidor')),
+        );
+        return;
+      }
+      
+      // Verificar que es un PDF válido (debe empezar con %PDF)
+      final pdfHeader = String.fromCharCodes(response.bodyBytes.take(4));
+      if (!pdfHeader.startsWith('%PDF')) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('El archivo recibido no es un PDF válido')),
+        );
+        return;
+      }
+      
       String pathFile = await saveFile(
           'Contributions', 'contribucionesPasivo.pdf', response.bodyBytes);
-      await OpenFilex.open(pathFile);
+      
+      final result = await OpenFilex.open(pathFile);
+      
+      // Verificar si hubo error al abrir el archivo
+      if (result.type != ResultType.done) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al abrir el archivo: ${result.message}')),
+        );
+      }
+    } catch (e) {
+      setState(() => stateLoading = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al procesar el documento: $e')),
+      );
     }
   }
 
@@ -143,13 +188,58 @@ class _ScreenContributionsStateNew extends State<ScreenContributionsNew> {
         biometricUserModelFromJson(await authService.readBiometric());
     setState(() => stateLoading = true);
     if (!mounted) return;
-    var response = await serviceMethod(mounted, context, 'get', null,
-        servicePrintContributionActive(biometric.affiliateId!), true, false);
-    setState(() => stateLoading = false);
-    if (response != null) {
+    
+    try {
+      var response = await serviceMethod(mounted, context, 'get', null,
+          servicePrintContributionActive(biometric.affiliateId!), true, false);
+      
+      setState(() => stateLoading = false);
+      
+      if (response == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo obtener el documento')),
+        );
+        return;
+      }
+      
+      // Verificar que tenemos datos válidos
+      if (response.bodyBytes.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se recibieron datos del servidor')),
+        );
+        return;
+      }
+      
+      // Verificar que es un PDF válido (debe empezar con %PDF)
+      final pdfHeader = String.fromCharCodes(response.bodyBytes.take(4));
+      if (!pdfHeader.startsWith('%PDF')) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('El archivo recibido no es un PDF válido')),
+        );
+        return;
+      }
+      
       String pathFile = await saveFile(
           'Contributions', 'contribucionesActivo.pdf', response.bodyBytes);
-      await OpenFilex.open(pathFile);
+      
+      final result = await OpenFilex.open(pathFile);
+      
+      // Verificar si hubo error al abrir el archivo
+      if (result.type != ResultType.done) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al abrir el archivo: ${result.message}')),
+        );
+      }
+    } catch (e) {
+      setState(() => stateLoading = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al procesar el documento: $e')),
+      );
     }
   }
 }
