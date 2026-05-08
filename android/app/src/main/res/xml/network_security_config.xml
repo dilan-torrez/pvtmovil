@@ -8,10 +8,9 @@
         </trust-anchors>
     </base-config>
 
-    <!-- 2. Configuración Específica (Desarrollo/Pruebas) -->
-    <!-- Permite HTTP (cleartext) y flexibilidad para tu IP de pruebas -->
-    <!-- si se requiere ip con o sin ssl http o https
+    <!-- 2. Configuración para IP de desarrollo con certificados autofirmados -->
+    <!-- Permite HTTPS con certificados autofirmados en la red local -->
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">192.168.2.241</domain>
-    </domain-config> -->
+        <domain includeSubdomains="false">192.168.2.90</domain>
+    </domain-config>
 </network-security-config>
