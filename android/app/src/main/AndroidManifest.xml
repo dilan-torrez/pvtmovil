@@ -34,6 +34,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Permisos para el uso de la autenticacion biometrica -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <!-- Permiso para notificaciones push en Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Permiso que utilizan las librerias de Google Play Services (Firebase) -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
 
