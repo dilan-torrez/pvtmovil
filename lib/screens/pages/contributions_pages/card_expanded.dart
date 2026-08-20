@@ -63,17 +63,38 @@ class _CardExpandedState extends State<CardExpanded> {
                                         ),
                                         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                         children: [
+                                          // Fila 1: Siempre
                                           tableInfo('Cotizable', Text(widget.contribution.quotable!)),
-                                          if (widget.contribution.state == 'ACTIVO')
+                                          // Fila 2: Solo si tiene valor
+                                          if (widget.contribution.state == 'ACTIVO' &&
+                                              widget.contribution.retirementFund != null &&
+                                              widget.contribution.retirementFund != '0,00')
                                             tableInfo('Fondo de retiro', Text(widget.contribution.retirementFund!)),
-                                          if (widget.contribution.state == 'ACTIVO')
+                                          // Fila 3: Solo si tiene valor
+                                          if (widget.contribution.state == 'ACTIVO' &&
+                                              widget.contribution.mortuaryQuota != null &&
+                                              widget.contribution.mortuaryQuota != '0,00')
                                             tableInfo('Cuota mortuoria', Text(widget.contribution.mortuaryQuota!)),
-                                          if (widget.contribution.state == 'ACTIVO')
+                                          // Fila 4: Solo si contributionTotal no es null
+                                          if (widget.contribution.state == 'ACTIVO' &&
+                                              widget.contribution.contributionTotal != null)
                                             tableInfo('Aporte', Text(widget.contribution.contributionTotal!)),
+                                          // Fila 5: Siempre para ACTIVO (Reintegro o Regularización)
                                           if (widget.contribution.state == 'ACTIVO')
-                                            tableInfo('Reintegro', Text('${widget.contribution.reimbursementTotal!} Bs')),
-                                          tableInfo(widget.contribution.state == 'ACTIVO' ? 'Total Aporte con Reintegro' : 'Total Aporte',
-                                              Text('${widget.contribution.total!} Bs')),
+                                            tableInfo(
+                                                widget.contribution.typePayroll == 'regularizacion'
+                                                    ? 'Regularización'
+                                                    : 'Reintegro',
+                                                Text('${widget.contribution.reimbursementTotal ?? '0,00'} Bs')
+                                            ),
+                                          // Fila 6: Siempre para ACTIVO (Total)
+                                          if (widget.contribution.state == 'ACTIVO')
+                                            tableInfo(
+                                                widget.contribution.typePayroll == 'regularizacion'
+                                                    ? 'Total Regularización'
+                                                    : 'Total Reintegro',
+                                                Text('${widget.contribution.total!} Bs')
+                                            ),
                                         ])
                                   ],
                                 ),
