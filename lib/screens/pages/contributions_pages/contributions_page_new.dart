@@ -76,6 +76,41 @@ class _ScreenContributionsStateNew extends State<ScreenContributionsNew> {
               if (contributionBloc.existContribution)
                 const Text('Mis Aportes por año:',
                     style: TextStyle(fontWeight: FontWeight.bold)),
+              // NUEVO: Leyenda de colores
+              if (contributionBloc.existContribution)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: const Color(0xffE0A44C),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text('Reintegro',
+                          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500)),
+                      const SizedBox(width: 16),
+                      Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xffCD6155)
+                          : const Color(0xffE8837C),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text('Regularización',
+                          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
               const SizedBox(
                 height: 20,
               ),

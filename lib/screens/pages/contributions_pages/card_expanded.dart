@@ -3,112 +3,180 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:muserpol_pvt/components/containers.dart';
 import 'package:muserpol_pvt/components/headers.dart';
-import 'package:muserpol_pvt/components/table_row.dart';
 import 'package:muserpol_pvt/model/contribution_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CardExpanded extends StatefulWidget {
+class CardExpanded extends StatelessWidget {
   final String index;
   final Contribution contribution;
   final Color colorRefund;
-  const CardExpanded({super.key, required this.colorRefund, required this.index, required this.contribution});
+  const CardExpanded({
+    super.key,
+    required this.colorRefund,
+    required this.index,
+    required this.contribution,
+  });
 
-  @override
-  State<CardExpanded> createState() => _CardExpandedState();
-}
+  bool get _isActive => contribution.state == 'ACTIVO';
 
-class _CardExpandedState extends State<CardExpanded> {
   @override
   Widget build(BuildContext context) {
-    final sizeHeight = MediaQuery.of(context).size.height;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+
     return GestureDetector(
-      onTap: () {
-        Navigator.pop(context);
-      },
+      onTap: () => Navigator.pop(context),
       child: Scaffold(
         backgroundColor: Colors.transparent.withValues(alpha: 0.5),
         body: GestureDetector(
+          onTap: () => Navigator.pop(context),
           child: Center(
             child: Hero(
-                tag: widget.index,
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: GestureDetector(
-                    onTap: () {},
+              tag: index,
+              child: Material(
+                type: MaterialType.transparency,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.85,
+                    ),
                     child: ContainerComponent(
-                        height: (widget.contribution.state == 'ACTIVO') ? sizeHeight / 1.5 : sizeHeight / 3,
-                        width: MediaQuery.of(context).size.width / 1.1,
-                        color: AdaptiveTheme.of(context).theme.scaffoldBackgroundColor,
-                        child: Column(
-                          children: [
-                            HedersComponent(
-                                titleHeader: widget.contribution.state,
-                                title: DateFormat(' dd, MMMM yyyy ', "es_ES").format(widget.contribution.monthYear!)),
-                            Expanded(
-                                child: Center(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    Table(
-                                        columnWidths: const {
-                                          0: FlexColumnWidth(5),
-                                          1: FlexColumnWidth(0.3),
-                                          2: FlexColumnWidth(5),
-                                        },
-                                        border: const TableBorder(
-                                          horizontalInside: BorderSide(
-                                            width: 0.5,
-                                            color: Colors.grey,
-                                            style: BorderStyle.solid,
-                                          ),
-                                        ),
-                                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                        children: [
-                                          // Fila 1: Siempre
-                                          tableInfo('Cotizable', Text(widget.contribution.quotable!)),
-                                          // Fila 2: Solo si tiene valor
-                                          if (widget.contribution.state == 'ACTIVO' &&
-                                              widget.contribution.retirementFund != null &&
-                                              widget.contribution.retirementFund != '0,00')
-                                            tableInfo('Fondo de retiro', Text(widget.contribution.retirementFund!)),
-                                          // Fila 3: Solo si tiene valor
-                                          if (widget.contribution.state == 'ACTIVO' &&
-                                              widget.contribution.mortuaryQuota != null &&
-                                              widget.contribution.mortuaryQuota != '0,00')
-                                            tableInfo('Cuota mortuoria', Text(widget.contribution.mortuaryQuota!)),
-                                          // Fila 4: Solo si contributionTotal no es null
-                                          if (widget.contribution.state == 'ACTIVO' &&
-                                              widget.contribution.contributionTotal != null)
-                                            tableInfo('Aporte', Text(widget.contribution.contributionTotal!)),
-                                          // Fila 5: Siempre para ACTIVO (Reintegro o Regularización)
-                                          if (widget.contribution.state == 'ACTIVO')
-                                            tableInfo(
-                                                widget.contribution.typePayroll == 'regularizacion'
-                                                    ? 'Regularización'
-                                                    : 'Reintegro',
-                                                Text('${widget.contribution.reimbursementTotal ?? '0,00'} Bs')
-                                            ),
-                                          // Fila 6: Siempre para ACTIVO (Total)
-                                          if (widget.contribution.state == 'ACTIVO')
-                                            tableInfo(
-                                                widget.contribution.typePayroll == 'regularizacion'
-                                                    ? 'Total Regularización'
-                                                    : 'Total Reintegro',
-                                                Text('${widget.contribution.total!} Bs')
-                                            ),
-                                        ])
+                      width: MediaQuery.of(context).size.width / 1.1,
+                      color: AdaptiveTheme.of(context).theme.scaffoldBackgroundColor,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          HedersComponent(
+                            titleHeader: contribution.state,
+                            title: DateFormat(' dd, MMMM yyyy ', "es_ES")
+                                .format(contribution.monthYear!),
+                          ),
+                          Flexible(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.symmetric(horizontal: 18.sp, vertical: 14.sp),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Grupo 1: Cotizable (ambos estados)
+                                  _row('Cotizable', '${contribution.quotable!} Bs', textColor),
+
+                                  if (!_isActive) ...[
+                                    // PASIVO: Cotizable + Total Aporte
+                                    // En PASIVO el dato real viene en "total", no en "contribution_total"
+                                    _divider(),
+                                    _row('Total Aporte',
+                                        '${contribution.total ?? '0,00'} Bs', textColor),
                                   ],
-                                ),
+
+                                  if (_isActive) ...[
+                                    _divider(),
+
+                                    // Grupo 2: Fondo de retiro + Cuota mortuoria
+                                    if (contribution.retirementFund != null &&
+                                        contribution.retirementFund != '0,00')
+                                      _row('Fondo de retiro', contribution.retirementFund!, textColor),
+                                    if (contribution.mortuaryQuota != null &&
+                                        contribution.mortuaryQuota != '0,00')
+                                      _row('Cuota mortuoria', contribution.mortuaryQuota!, textColor),
+
+                                    _divider(),
+
+                                    // Grupo 3: Total Aporte
+                                    _row('Total Aporte',
+                                        '${contribution.contributionTotal ?? '0,00'} Bs', textColor),
+
+                                    _divider(),
+
+                                    // Grupo 4: Aporte + Reintegro/Regularización
+                                    _row('Aporte',
+                                        '${contribution.contributionTotal ?? '0,00'} Bs', textColor),
+                                    _row(
+                                      contribution.typePayroll == 'regularizacion'
+                                          ? 'Regularización'
+                                          : 'Reintegro',
+                                      '${contribution.reimbursementTotal ?? '0,00'} Bs',
+                                      textColor,
+                                      dotColor: colorRefund != Colors.transparent
+                                      ? (Theme.of(context).brightness == Brightness.dark
+                                          ? colorRefund  // dark: mantiene el color original
+                                          : (contribution.typePayroll == 'regularizacion'
+                                              ? const Color(0xffE8837C)   // light: rojo suave
+                                              : const Color(0xffE0A44C))) // light: dorado (sin cambio)
+                                      : null,
+                                    ),
+
+                                    _divider(),
+
+                                    // Grupo 5: TOTAL
+                                    _totalRow('${contribution.total ?? '0,00'} Bs', textColor),
+                                  ],
+                                ],
                               ),
-                            ))
-                          ],
-                        )),
+                            ),
+                          ),
+                          SizedBox(height: 16.sp),
+                        ],
+                      ),
+                    ),
                   ),
-                )),
+                ),
+              ),
+            ),
           ),
-          onTap: () {
-            Navigator.pop(context);
-          },
         ),
+      ),
+    );
+  }
+
+  Widget _divider() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10.sp),
+      child: Container(height: 1, color: Colors.grey.shade300),
+    );
+  }
+
+  Widget _row(String label, String value, Color textColor, {Color? dotColor}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 7.sp),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              if (dotColor != null) ...[
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
+                ),
+                SizedBox(width: 8.sp),
+              ],
+              Text(
+                label,
+                style: TextStyle(fontSize: 18.sp, color: textColor.withValues(alpha: 0.75)),
+              ),
+            ],
+          ),
+          Text(
+            value,
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600, color: textColor),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _totalRow(String value, Color textColor) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.sp),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('TOTAL',
+              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold, color: textColor)),
+          Text(value,
+              style: TextStyle(fontSize: 21.sp, fontWeight: FontWeight.bold, color: textColor)),
+        ],
       ),
     );
   }
