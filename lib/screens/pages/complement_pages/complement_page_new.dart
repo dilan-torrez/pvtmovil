@@ -9,7 +9,6 @@ import 'package:muserpol_pvt/bloc/user/user_bloc.dart';
 import 'package:muserpol_pvt/components/button.dart';
 import 'package:muserpol_pvt/components/card_observation.dart';
 import 'package:muserpol_pvt/components/susessful.dart';
-import 'package:muserpol_pvt/main.dart';
 import 'package:muserpol_pvt/model/procedure_model.dart';
 import 'package:muserpol_pvt/provider/app_state.dart';
 import 'package:muserpol_pvt/provider/files_state.dart';

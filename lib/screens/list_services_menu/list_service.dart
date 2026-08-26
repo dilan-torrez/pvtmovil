@@ -203,14 +203,6 @@ class _ScreenListServiceState extends State<ScreenListService> {
         description: 'Seguimiento de trámites y evaluación referencial.',
         onPressed: () => _goToModule(2),
       ),
-      if (false) // Logic ready for future
-        _ServiceData(
-          key: keyBeneficios,
-          image: 'assets/images/icon_retFund.png',
-          title: 'Fondo de Retiro y Cuota Auxilio Mortuorio',
-          description: 'Seguimiento de fondo de retiro.',
-          onPressed: () => _goToModule(3),
-        ),
     ];
 
     return PopScope(
@@ -358,7 +350,6 @@ class ServiceGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     const kPrimaryGreen = Color(0xff419388);
-    const kDarkBg = Color(0xff132c29);
 
     return InkWell(
       borderRadius: BorderRadius.circular(20),

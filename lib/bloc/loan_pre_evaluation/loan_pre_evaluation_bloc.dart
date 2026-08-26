@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../model/loan_pre_evaluation_model.dart';
 import '../../services/service_method.dart';

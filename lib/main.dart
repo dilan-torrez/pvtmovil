@@ -212,30 +212,37 @@ class _MuserpolState extends State<Muserpol> with WidgetsBindingObserver {
       dark: styleDark(),
       debugShowFloatingThemeButton: false,
       initial: widget.savedThemeMode ?? AdaptiveThemeMode.light,
-      builder: (theme, darkTheme) => MaterialApp(
-        localizationsDelegates: const [
-          CountryLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('es', 'ES'),
-          Locale('en', 'US'),
-        ],
-        debugShowCheckedModeBanner: false,
-        navigatorKey: navigatorKey,
-        theme: theme,
-        darkTheme: darkTheme,
-        title: 'MUSERPOL PVT',
-        initialRoute: 'check_auth',
-        routes: {
-          'check_auth': (_) => const CheckAuthScreen(),
-          'slider': (_) => const PageSlider(),
-          'newlogin': (_) => const ScreenNewLogin(),
-          'contacts': (_) => const ScreenContact(),
-          'message': (_) => const ScreenNotification(),
-        },
+      builder: (theme, darkTheme) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaler: TextScaler.linear(
+            MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.2),
+          ),
+        ),
+        child: MaterialApp(
+          localizationsDelegates: const [
+            CountryLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('es', 'ES'),
+            Locale('en', 'US'),
+          ],
+          debugShowCheckedModeBanner: false,
+          navigatorKey: navigatorKey,
+          theme: theme,
+          darkTheme: darkTheme,
+          title: 'MUSERPOL PVT',
+          initialRoute: 'check_auth',
+          routes: {
+            'check_auth': (_) => const CheckAuthScreen(),
+            'slider': (_) => const PageSlider(),
+            'newlogin': (_) => const ScreenNewLogin(),
+            'contacts': (_) => const ScreenContact(),
+            'message': (_) => const ScreenNotification(),
+          },
+        ),
       ),
     );
   }

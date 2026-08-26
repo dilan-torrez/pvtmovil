@@ -1,7 +1,6 @@
 import 'dart:io';
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart' as p;
-import 'package:flutter/material.dart';
 import 'package:muserpol_pvt/database/notification_model.dart';
 import 'package:muserpol_pvt/database/affiliate_model.dart';
 export 'package:muserpol_pvt/database/notification_model.dart';

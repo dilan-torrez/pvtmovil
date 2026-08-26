@@ -65,20 +65,5 @@ List<TargetFocus> getTutorialTargets({
         ),
       ],
     ),
-    if (false) // Logic ready for future
-      TargetFocus(
-        keyTarget: keyBeneficios,
-        shape: ShapeLightFocus.RRect,
-        radius: 16,
-        contents: [
-          TargetContent(
-            align: ContentAlign.bottom,
-            child: const Text(
-              'Mira tus beneficios aquí.',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
   ];
 }

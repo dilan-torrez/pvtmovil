@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Colores del tema (style.dart)
 const _kPrimaryGreen = Color(0xff419388);
-const _kDarkBg = Color(0xff132c29);
 
 class ServiceOption extends StatelessWidget {
   final String image;

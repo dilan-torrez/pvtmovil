@@ -1,6 +1,5 @@
 // text_detector.dart
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:muserpol_pvt/utils/logger.dart'; // SEGURIDAD: Import para logging seguro
 import 'files_state_veritify.dart';
