@@ -97,6 +97,7 @@ class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
     final confirmed = await _showDeleteConfirmation();
     if (confirmed == true) {
       // Obtener userId del usuario actual
+      if (!mounted) return;
       final userBloc = context.read<UserBloc>();
       final userId = userBloc.state.user?.affiliateId;
 

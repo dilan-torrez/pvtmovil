@@ -107,6 +107,7 @@ class LoanPreEvaluationBloc
         AppLog.d(
             'Intento ${retryCount + 1} de $maxRetries para cargar modalidades');
 
+        if (!context.mounted) return;
         final response = await serviceMethod(
           context.mounted,
           context,

@@ -51,10 +51,12 @@ class _ScreenHistoryComplementState extends State<ScreenHistoryComplement> {
     );
 
     if (response != null) {
+      if (!mounted) return;
       final data = procedureModelFromJson(response.body);
       final List<Datum> newItems = data.data?.data ?? [];
 
       if (newItems.isNotEmpty) {
+        if (!mounted) return;
         BlocProvider.of<ProcedureBloc>(context)
             .add(AddHistoryProcedures(newItems));
         setState(() => _page++);

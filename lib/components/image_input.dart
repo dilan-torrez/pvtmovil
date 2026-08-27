@@ -93,7 +93,7 @@ class ImageInputState extends State<ImageInput> {
       acceptedTypeGroups: [typeGroup],
     );
 
-    if (!mounted) return;
+    if (!context.mounted) return;
     Navigator.pop(context);
 
     if (file == null) return;

@@ -121,6 +121,7 @@ class _WebScreenState extends State<Webscreen> {
 
       if (jsonResponse['error'] == false &&
           jsonResponse.containsKey('logoutUrl')) {
+        if (!mounted) return;
         final authService = Provider.of<AuthService>(context, listen: false);
         final tokenState = Provider.of<TokenState>(context, listen: false);
         final notificationBloc =
@@ -129,6 +130,7 @@ class _WebScreenState extends State<Webscreen> {
 
         await DBProvider.db.database;
 
+        if (!mounted) return;
         UserModel user = UserModel.fromJson({
           "api_token": jsonResponse['data']['apiToken'],
           "user": jsonResponse['data']['information']

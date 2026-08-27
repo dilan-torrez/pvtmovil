@@ -16,11 +16,13 @@ import 'package:muserpol_pvt/bloc/user/user_bloc.dart';
 
 Future<void> loadGeneralServices(BuildContext context) async {
   await _loadContributions(context);
+  if (!context.mounted) return;
   await _loadLoans(context);
 }
 
 Future<void> loadGeneralServicesComplementEconomic(BuildContext context) async {
   await loadEconomicComplementServices(context);
+  if (!context.mounted) return;
   await getProcessingPermit(context);
 }
 
@@ -100,9 +102,11 @@ Future<void> _loadContributions(BuildContext context) async {
   final authService = Provider.of<AuthService>(context, listen: false);
   final biometric =
       biometricUserModelFromJson(await authService.readBiometric());
+  if (!context.mounted) return;
   final contributionBloc =
       BlocProvider.of<ContributionBloc>(context, listen: false);
 
+  if (!context.mounted) return;
   var response = await serviceMethod(
     true,
     context,
@@ -155,8 +159,10 @@ Future<void> _loadLoans(BuildContext context) async {
   final authService = Provider.of<AuthService>(context, listen: false);
   final biometric =
       biometricUserModelFromJson(await authService.readBiometric());
+  if (!context.mounted) return;
   final loanBloc = BlocProvider.of<LoanBloc>(context, listen: false);
 
+  if (!context.mounted) return;
   var response = await serviceMethod(
     true,
     context,

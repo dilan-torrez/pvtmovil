@@ -35,12 +35,15 @@ class AuthHelpers {
     );
     prefs!.setBool('isDoblePerception',
         json.decode(response.body)['data']['information']['isDoblePerception']);
+    if (!context.mounted) return;
     await authService.writeBiometric(
         context, biometricUserModelToJson(biometricUserModel));
 
+    if (!context.mounted) return;
     await authService.writeToken(context, user.apiToken!);
     tokenState.updateStateAuxToken(false);
 
+    if (!context.mounted) return;
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
