@@ -229,10 +229,11 @@ class Contribution {
     // Parse id safely when the backend returns it as String or int
     int? parsedId;
     final rawId = json["id"];
-    if (rawId is int)
+    if (rawId is int) {
       parsedId = rawId;
-    else if (rawId is String)
+    } else if (rawId is String) {
       parsedId = int.tryParse(rawId) ?? (double.tryParse(rawId)?.toInt());
+    }
 
     DateTime? parsedMonth;
     final rawMonth = json["month_year"];

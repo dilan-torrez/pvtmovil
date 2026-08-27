@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -47,11 +47,11 @@ Future<String> saveFile(
     }
     
     final fileSize = await file.length();
-    print('Archivo guardado: $filePath (${fileSize} bytes)');
+    debugPrint('Archivo guardado: $filePath ($fileSize bytes)');
 
     return file.path;
   } catch (e) {
-    print('Error al guardar archivo: $e');
+    debugPrint('Error al guardar archivo: $e');
     rethrow;
   }
 }

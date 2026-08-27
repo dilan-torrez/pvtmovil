@@ -172,6 +172,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 

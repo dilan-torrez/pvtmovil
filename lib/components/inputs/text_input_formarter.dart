@@ -10,7 +10,7 @@ class PhoneNumberFormatter extends TextInputFormatter {
 
     String formatted = '';
     if (digits.length <= 3) {
-      formatted = '${digits}';
+      formatted = digits;
     } else if (digits.length <= 6) {
       formatted = '${digits.substring(0, 3)} ${digits.substring(3)}';
     } else {

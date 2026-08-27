@@ -198,6 +198,7 @@ class _MuserpolState extends State<Muserpol> with WidgetsBindingObserver {
 
   void _updatebd() {
     Future.delayed(Duration.zero, () {
+      if (!mounted) return;
       final notificationBloc = BlocProvider.of<NotificationBloc>(context);
       DBProvider.db.getAllNotificationModel().then(
             (res) => notificationBloc.add(UpdateNotifications(res)),
@@ -215,7 +216,7 @@ class _MuserpolState extends State<Muserpol> with WidgetsBindingObserver {
       builder: (theme, darkTheme) => MediaQuery(
         data: MediaQuery.of(context).copyWith(
           textScaler: TextScaler.linear(
-            MediaQuery.of(context).textScaleFactor.clamp(0.8, 1.2),
+            MediaQuery.of(context).textScaler.scale(1.0).clamp(0.8, 1.2),
           ),
         ),
         child: MaterialApp(
