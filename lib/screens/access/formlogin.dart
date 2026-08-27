@@ -339,7 +339,7 @@ class _ScreenFormLoginState extends State<ScreenFormLogin> {
     return formatted.replaceAll(RegExp(r'[^0-9]'), '');
   }
 
-  sendCredentialsNew({required bool isBiometric}) async {
+  Future<void> sendCredentialsNew({required bool isBiometric}) async {
     FocusScope.of(context).unfocus();
     setState(() => isLoading = true);
 
@@ -378,10 +378,12 @@ class _ScreenFormLoginState extends State<ScreenFormLogin> {
       String cellphone;
 
       if (isBiometric) {
+        if (!mounted) return;
         final authService = Provider.of<AuthService>(context, listen: false);
         final biometric =
             biometricUserModelFromJson(await authService.readBiometric());
 
+        if (!mounted) return;
         final saved = biometric.userAppMobile;
         if (saved == null) {
           if (!mounted) return;

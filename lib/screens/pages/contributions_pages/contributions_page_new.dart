@@ -156,7 +156,7 @@ class _ScreenContributionsStateNew extends State<ScreenContributionsNew> {
         : Container();
   }
 
-  getContributionPasive() async {
+  Future<void> getContributionPasive() async {
     final authService = Provider.of<AuthService>(context, listen: false);
     final biometric =
         biometricUserModelFromJson(await authService.readBiometric());
@@ -217,7 +217,7 @@ class _ScreenContributionsStateNew extends State<ScreenContributionsNew> {
     }
   }
 
-  getContributionActive() async {
+  Future<void> getContributionActive() async {
     final authService = Provider.of<AuthService>(context, listen: false);
     final biometric =
         biometricUserModelFromJson(await authService.readBiometric());

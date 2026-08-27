@@ -44,7 +44,7 @@ class _ScreenComplementNewState extends State<ScreenComplementNew> {
     super.dispose();
   }
 
-  getEconomicComplement({bool refresh = false}) async {
+  Future<void> getEconomicComplement({bool refresh = false}) async {
   final procedureBloc = BlocProvider.of<ProcedureBloc>(context, listen: false);
 
   final response = await serviceMethod(
@@ -150,7 +150,7 @@ class _ScreenComplementNewState extends State<ScreenComplementNew> {
     );
   }
 
-  create() async {
+  Future<void> create() async {
     final filesState = Provider.of<FilesState>(context, listen: false);
     setState(() => stateBtn = false);
     await controleVerified();
@@ -172,12 +172,12 @@ class _ScreenComplementNewState extends State<ScreenComplementNew> {
     );
   }
 
-  procedure(dynamic response) {
+  void procedure(dynamic response) {
     final filesState = Provider.of<FilesState>(context, listen: false);
     final procedureBloc = Provider.of<ProcedureBloc>(context, listen: false);
     final tabProcedureState =
         Provider.of<TabProcedureState>(context, listen: false);
-    return showSuccessful(context, 'Trámite registrado correctamente',
+    showSuccessful(context, 'Trámite registrado correctamente',
         () async {
       // Siempre abrimos el PDF que llega en la respuesta del POST (ya sea 1 o tenga ambas páginas)
       String pathFile = await saveFile(
@@ -219,7 +219,7 @@ class _ScreenComplementNewState extends State<ScreenComplementNew> {
     });
   }
 
-  controleVerified() async {
+  Future<void> controleVerified() async {
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
     String type = 'verified';
     var response = await serviceMethod(mounted, context, 'get', null,
@@ -230,7 +230,7 @@ class _ScreenComplementNewState extends State<ScreenComplementNew> {
     }
   }
 
-  getProcessingPermit() async {
+  Future<void> getProcessingPermit() async {
     final loadingState = Provider.of<LoadingState>(context, listen: false);
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
     final tabProcedureState =

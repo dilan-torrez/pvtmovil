@@ -105,7 +105,7 @@ class _HedersComponentState extends State<HedersComponent> {
     );
   }
 
-  dialogInbox(BuildContext context) {
+  void dialogInbox(BuildContext context) {
     showDialog(
         barrierDismissible: false,
         context: context,

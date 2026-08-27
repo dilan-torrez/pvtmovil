@@ -59,7 +59,7 @@ class PushNotificationService {
     debugPrint('REGISTRADO');
   }
 
-  static _onMessageHandler(RemoteMessage message) async {
+  static Future<void> _onMessageHandler(RemoteMessage message) async {
     debugPrint('_onMessageHandler ${message.data}');
     final affiliateId = await DBProvider.db.getAffiliateModelById();
     final notification = NotificationModel(
@@ -80,7 +80,7 @@ class PushNotificationService {
     _messageStream.add(json.encode(message.data));
   }
 
-  static requestPermission() async {
+  static Future<void> requestPermission() async {
     FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
         badge: true, alert: true, sound: true);
     NotificationSettings settings = await messaging.requestPermission(
@@ -95,7 +95,7 @@ class PushNotificationService {
     debugPrint('User push notification status ${settings.authorizationStatus}');
   }
 
-  static closeStreams() async {
+  static Future<void> closeStreams() async {
     // _messageStream.close();
   }
 

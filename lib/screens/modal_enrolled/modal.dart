@@ -45,7 +45,7 @@ class _ModalInsideModalState extends State<ModalInsideModal>
     getMessage();
   }
 
-  getMessage() async {
+  Future<void> getMessage() async {
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
     var response = await serviceMethod(
         mounted, context, 'get', null, serviceProcessEnrolled(), true, true);
@@ -70,6 +70,7 @@ class _ModalInsideModalState extends State<ModalInsideModal>
         if (didPop) return;
         bool exitScreen = await _onBackPressed();
         if (exitScreen) {
+          if (!context.mounted) return;
           Navigator.of(context).pop();
         }
       },
@@ -118,7 +119,7 @@ class _ModalInsideModalState extends State<ModalInsideModal>
     );
   }
 
-  _onBackPressed() async {
+  Future<bool> _onBackPressed() async {
     final result = await showDialog<bool>(
       barrierDismissible: false,
       context: context,
@@ -137,7 +138,7 @@ class _ModalInsideModalState extends State<ModalInsideModal>
     return result ?? false;
   }
 
-  sendImage(String image) async {
+  Future<void> sendImage(String image) async {
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
     final Map<String, dynamic> body = {'image': image};
 

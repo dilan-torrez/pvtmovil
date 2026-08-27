@@ -91,13 +91,13 @@ class _PageSliderState extends State<PageSlider> {
     );
   }
 
-  pageChangeCallback(int lpage) {
+  void pageChangeCallback(int lpage) {
     setState(() {
       page = lpage;
     });
   }
 
-  _showModalInside() async {
+  Future<void> _showModalInside() async {
     return showBarModalBottomSheet(
       enableDrag: false,
       expand: false,

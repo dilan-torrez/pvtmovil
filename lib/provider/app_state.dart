@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TokenState with ChangeNotifier {
   bool stateAuxToken = false;
-  updateStateAuxToken(bool state) {
+  void updateStateAuxToken(bool state) {
     stateAuxToken = state;
     notifyListeners();
   }
@@ -10,7 +10,7 @@ class TokenState with ChangeNotifier {
 
 class ObservationState with ChangeNotifier {
   String messageObservation = '';
-  updateObservation(String message) {
+  void updateObservation(String message) {
     messageObservation = message;
     notifyListeners();
   }
@@ -18,7 +18,7 @@ class ObservationState with ChangeNotifier {
 
 class TabProcedureState with ChangeNotifier {
   int indexTabProcedure = 0;
-  updateTabProcedure(int index) async {
+  Future<void> updateTabProcedure(int index) async {
     await Future.delayed(const Duration(milliseconds: 50), () {});
     indexTabProcedure = index;
     notifyListeners();
@@ -27,7 +27,7 @@ class TabProcedureState with ChangeNotifier {
 
 class ProcessingState with ChangeNotifier {
   bool stateProcessing = false;
-  updateStateProcessing(bool state) {
+  void updateStateProcessing(bool state) {
     stateProcessing = state;
     notifyListeners();
   }
@@ -35,7 +35,7 @@ class ProcessingState with ChangeNotifier {
 
 class LoadingState with ChangeNotifier {
   bool stateLoadingProcedure = false;
-  updateStateLoadingProcedure(bool state) async {
+  Future<void> updateStateLoadingProcedure(bool state) async {
     await Future.delayed(const Duration(milliseconds: 50), () {});
     stateLoadingProcedure = state;
     notifyListeners();

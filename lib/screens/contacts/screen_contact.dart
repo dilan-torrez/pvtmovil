@@ -21,7 +21,7 @@ class _ScreenContactState extends State<ScreenContact> {
     getContacts();
   }
 
-  getContacts() async {
+  Future<void> getContacts() async {
     var response = await serviceMethod(
       mounted,
       context,

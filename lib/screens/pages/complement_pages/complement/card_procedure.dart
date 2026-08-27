@@ -79,6 +79,7 @@ class _StepperProcedureState extends State<StepperProcedure> {
         if (didPop) return;
         bool exitScreen = await _onBackPressed();
         if (exitScreen) {
+          if (!context.mounted) return;
           Navigator.of(context).pop();
         }
       },
@@ -227,7 +228,7 @@ class _StepperProcedureState extends State<StepperProcedure> {
     );
   }
 
-  tapped(int step) async {
+  Future<void> tapped(int step) async {
     if (step == 0) return;
     final loadingState = Provider.of<LoadingState>(context, listen: false);
     final tabProcedureState =
@@ -258,7 +259,7 @@ class _StepperProcedureState extends State<StepperProcedure> {
     return result ?? false;
   }
 
-  initCtrlLive() async {
+  Future<void> initCtrlLive() async {
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false).state;
     final loadingState = Provider.of<LoadingState>(context, listen: false);
     final filesState = Provider.of<FilesState>(context, listen: false);
@@ -283,13 +284,13 @@ class _StepperProcedureState extends State<StepperProcedure> {
                   await tabProcedureState.updateTabProcedure(
                       tabProcedureState.indexTabProcedure + 1);
                 }
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Navigator.pop(context);
               });
             }));
   }
 
-  nextPage() async {
+  Future<void> nextPage() async {
     final filesState = Provider.of<FilesState>(context, listen: false);
     final loadingState = Provider.of<LoadingState>(context, listen: false);
     final userBloc =
@@ -326,7 +327,7 @@ class _StepperProcedureState extends State<StepperProcedure> {
     }
   }
 
-  confirmDoblePercetionAlert() async {
+  Future<void> confirmDoblePercetionAlert() async {
     final loadingState = Provider.of<LoadingState>(context, listen: false);
     return await showDialog(
         barrierDismissible: false,
@@ -340,13 +341,13 @@ class _StepperProcedureState extends State<StepperProcedure> {
                 },
                 actionCancel: () async {
                   await loadingState.updateStateLoadingProcedure(true);
-                  if (!mounted) return;
+                  if (!context.mounted) return;
                   Navigator.of(context).pop();
                 },
                 messageCorrect: 'Crear')));
   }
 
-  detectorText(InputImage inputImage, File fileImage, FileDocument item) async {
+  Future<void> detectorText(InputImage inputImage, File fileImage, FileDocument item) async {
     setState(() => buttonLoading = true);
     //VERIFICAMOS QUE LA IMAGEN COINCIDA CON LAS PALABRAS CLAVES
     final loadingState = Provider.of<LoadingState>(context, listen: false);
@@ -361,15 +362,15 @@ class _StepperProcedureState extends State<StepperProcedure> {
         // LOOP POR CADA PALABRA CLAVE
         if (recognizedText.text.contains(element)) {
           // VERIFICAMOS SI LA IMAGEN CONTIENE LAS PALABRAS CLAVES
-          await filesState.updateStateFiles(
+          filesState.updateStateFiles(
               item.id!, true); // CAMBIAMOS DE ESTADO
-          await loadingState.updateStateLoadingProcedure(true);
+          loadingState.updateStateLoadingProcedure(true);
           setState(() => buttonLoading = false);
         } else {
           debugPrint('NO HAY LA PALABRA $element');
-          await filesState.updateStateFiles(
+          filesState.updateStateFiles(
               item.id!, false); // CAMBIAMOS DE ESTADO
-          await loadingState.updateStateLoadingProcedure(
+          loadingState.updateStateLoadingProcedure(
               false); //OCULTAMOS EL BTN DE CONTINUAR
           setState(() => buttonLoading = false);
           return;
@@ -383,7 +384,7 @@ class _StepperProcedureState extends State<StepperProcedure> {
     }
   }
 
-  prepareDocuments() async {
+  Future<void> prepareDocuments() async {
     //PREPARAMOS LOS DOCUMENTOS SOLICITADOS
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false).state;
     final files = Provider.of<FilesState>(context, listen: false).files;
@@ -407,7 +408,7 @@ class _StepperProcedureState extends State<StepperProcedure> {
     }
   }
 
-  sendInfo(List<Map<String, String>> info) async {
+  Future<void> sendInfo(List<Map<String, String>> info) async {
     final loadingState = Provider.of<LoadingState>(context, listen: false);
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false).state;
     final processingState =

@@ -106,7 +106,7 @@ class _CardLoanState extends State<CardLoanNew> {
     );
   }
 
-  onPressed(BuildContext context) {
+  void onPressed(BuildContext context) {
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false,

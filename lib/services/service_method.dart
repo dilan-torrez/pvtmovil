@@ -124,6 +124,7 @@ Future<dynamic> serviceMethod(
           }).catchError((err) {
             // Manejo de errores de red
             debugPrint('errA $err');
+            if (!context.mounted) return null;
             if ('$err'.contains('html')) {
               callDialogAction(context,
                   'Tenemos un problema con nuestro servidor, intente luego');
@@ -148,11 +149,13 @@ Future<dynamic> serviceMethod(
               case 201:
                 return value;
               default:
+                if (!context.mounted) return null;
                 callDialogAction(context, json.decode(value.body)['message']);
                 return null;
             }
           }).catchError((err) {
             debugPrint('errA $err');
+            if (!context.mounted) return null;
             callDialogAction(context, 'Error al conectar con el servidor');
             return null;
           });
@@ -168,11 +171,13 @@ Future<dynamic> serviceMethod(
               case 200:
                 return value;
               default:
+                if (!context.mounted) return null;
                 callDialogAction(context, json.decode(value.body)['message']);
                 return null;
             }
           }).catchError((err) {
             debugPrint('errA $err');
+            if (!context.mounted) return null;
             callDialogAction(context, 'Error de red');
             return null;
           });
@@ -188,11 +193,13 @@ Future<dynamic> serviceMethod(
               case 200:
                 return value;
               default:
+                if (!context.mounted) return null;
                 callDialogAction(context, json.decode(value.body)['message']);
                 return null;
             }
           }).catchError((err) {
             debugPrint('errA $err');
+            if (!context.mounted) return null;
             callDialogAction(context, 'Error al actualizar');
             return null;
           });
@@ -200,27 +207,27 @@ Future<dynamic> serviceMethod(
     }
   } on TimeoutException catch (e) {
     debugPrint('errB $e');
-    if (!mounted) return;
+    if (!context.mounted) return;
     return callDialogAction(
         context, 'Tenemos un problema con nuestro servidor, intente luego');
   } on SocketException catch (e) {
     debugPrint('errC $e');
-    if (!mounted) return;
+    if (!context.mounted) return;
     //Sin conexion fisica a internet
     return callDialogAction(context, 'Verifique su conexión a Internet2');
   } on ClientException catch (e) {
     debugPrint('errD $e');
-    if (!mounted) return;
+    if (!context.mounted) return;
     //Problema en la peticion HTTP o SSL
     return callDialogAction(context, 'Verifique su conexión a Internet3');
   } on MissingPluginException catch (e) {
     debugPrint('errF $e');
-    if (!mounted) return;
+    if (!context.mounted) return;
     //Falta un plugin nativo requerido
     return callDialogAction(context, 'Verifique su conexión a Internet4');
   } catch (e) {
     debugPrint('errG $e');
-    if (!mounted) return;
+    if (!context.mounted) return;
     callDialogAction(context, '$e');
   }
 }
@@ -260,7 +267,7 @@ void callDialogAction(BuildContext context, String message) {
 }
 
 /// Cierra la sesión del usuario, limpia estados, tokens, y redirige al inicio
-confirmDeleteSession(bool mounted, BuildContext context, bool voluntary) async {
+Future<void> confirmDeleteSession(bool mounted, BuildContext context, bool voluntary) async {
   final procedureBloc = BlocProvider.of<ProcedureBloc>(context, listen: false);
   final authService = Provider.of<AuthService>(context, listen: false);
   final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
@@ -304,7 +311,7 @@ confirmDeleteSession(bool mounted, BuildContext context, bool voluntary) async {
   processingState.updateStateProcessing(false);
 
   // Navega al inicio
-  if (!mounted) return;
+  if (!context.mounted) return;
   Navigator.pushReplacementNamed(context, 'newlogin');
 }
 
@@ -319,7 +326,7 @@ Future<bool> checkVersion(bool mounted, BuildContext context) async {
       if (Platform.isIOS) data['store'] = dotenv.env['storeIOS'];
       if (Platform.isAndroid) data['store'] = dotenv.env['storeAndroid'];
 
-      if (!mounted) return false;
+      if (!context.mounted) return false;
 
       var response = await serviceMethod(
         mounted,
@@ -333,7 +340,7 @@ Future<bool> checkVersion(bool mounted, BuildContext context) async {
 
       if (response != null && json.decode(response.body)['error']) {
         // Si hay nueva versión, muestra diálogo con botón para actualizar
-        if (!mounted) return false;
+        if (!context.mounted) return false;
         return await showDialog(
             barrierDismissible: false,
             context: context,
@@ -375,10 +382,12 @@ Future<bool> checkVersion(bool mounted, BuildContext context) async {
   } on SocketException catch (e) {
     debugPrint('errC $e');
     //Sin conexion al hacer lookup en checkVersion
+    if (!context.mounted) return false;
     callDialogAction(context, 'Verifique su conexión a Internet5');
     return false;
   } catch (e) {
     debugPrint('errG $e');
+    if (!context.mounted) return false;
     callDialogAction(context, '$e');
     return false;
   }

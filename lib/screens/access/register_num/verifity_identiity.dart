@@ -9,6 +9,7 @@ import 'package:muserpol_pvt/components/dialog_action.dart';
 import 'package:muserpol_pvt/model/register_number/files_state_veritify.dart';
 import 'package:muserpol_pvt/model/register_number/ocr_detector.dart';
 import 'package:muserpol_pvt/screens/access/sendmessagelogin.dart';
+import 'package:muserpol_pvt/utils/permission_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image/image.dart' as img;
@@ -45,6 +46,18 @@ class _RegisterIdentityScreenState extends State<RegisterIdentityScreen> {
   }
 
   Future<void> _initializeCamera() async {
+    // Solicitar permiso de cámara antes de inicializar
+    final hasPermission = await PermissionHelper.requestCameraPermission(context);
+    if (!hasPermission) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Permiso de cámara denegado')),
+        );
+      }
+      return;
+    }
+
     await initCameras();
 
     if (cameras.isEmpty) {
@@ -307,7 +320,7 @@ class _RegisterIdentityScreenState extends State<RegisterIdentityScreen> {
     super.dispose();
   }
 
-  sendCredentialsNew(File frontImage, File backImage) async {
+  Future<void> sendCredentialsNew(File frontImage, File backImage) async {
     List<Map<String, String>> data = [];
 
     final frontbytes = await frontImage.readAsBytes();

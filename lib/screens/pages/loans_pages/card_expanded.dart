@@ -262,7 +262,7 @@ class _CardExpandedState extends State<CardExpandedNew> {
     );
   }
 
-  getLoanPlan(BuildContext context, int loanId) async {
+  Future<void> getLoanPlan(BuildContext context, int loanId) async {
     setState(() => stateLoading = true);
     var response = await serviceMethod(
         mounted, context, 'get', null, servicePrintLoans(loanId), true, true);
@@ -274,7 +274,7 @@ class _CardExpandedState extends State<CardExpandedNew> {
     }
   }
 
-  getLoanKardex(BuildContext context, int loanId) async {
+  Future<void> getLoanKardex(BuildContext context, int loanId) async {
     setState(() => stateLoading = true);
     var response = await serviceMethod(
         mounted, context, 'get', null, servicePrintKadex(loanId), true, true);

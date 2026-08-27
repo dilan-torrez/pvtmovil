@@ -49,12 +49,12 @@ class FilesState with ChangeNotifier {
     notifyListeners();
   }
 
-  updateStateFiles(String keyId, bool state) {
+  void updateStateFiles(String keyId, bool state) {
     files.firstWhere((e) => e.id == keyId).validateState = state;
     notifyListeners();
   }
 
-  updateFile(String keyId, File? file) {
+  void updateFile(String keyId, File? file) {
     if (file == null) {
       files.firstWhere((e) => e.id == keyId).imageFile = null;
     } else {
@@ -63,7 +63,7 @@ class FilesState with ChangeNotifier {
     notifyListeners();
   }
 
-  clearFiles() {
+  void clearFiles() {
     for (var i = 0; i < files.length; i++) {
       files[i].imageFile = null;
       files[i].validateState = true;

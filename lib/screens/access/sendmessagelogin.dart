@@ -405,7 +405,7 @@ class _SendMessageLogin extends State<SendMessageLogin> {
         user: user);
   }
 
-  Future verifyPinNew(code) async {
+  Future<void> verifyPinNew(String code) async {
     if (widget.body['messageId'] == null) {
       return;
     }

@@ -166,7 +166,7 @@ class _ScreenLoansNewState extends State<ScreenLoansNew> {
     }
   }
 
-  reloadLoans() async {
+  Future<void> reloadLoans() async {
     final loanBloc = BlocProvider.of<LoanBloc>(context, listen: false);
     final authService = Provider.of<AuthService>(context, listen: false);
 

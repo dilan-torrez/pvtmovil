@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-showSuccessful(
+Future<void> showSuccessful(
     BuildContext context, String textDialog, Function() finish) async {
   showDialog(
       barrierDismissible: false,

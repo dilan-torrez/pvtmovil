@@ -137,7 +137,7 @@ class AppBarDualTitle extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  dialogInbox(BuildContext context) {
+  void dialogInbox(BuildContext context) {
     showDialog(
         barrierDismissible: false,
         context: context,

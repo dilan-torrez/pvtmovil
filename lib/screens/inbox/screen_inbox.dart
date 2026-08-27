@@ -148,7 +148,7 @@ class _ScreenInboxState extends State<ScreenInbox> {
     );
   }
 
-  deleteMessage(NotificationModel item) async {
+  Future<void> deleteMessage(NotificationModel item) async {
     final notificationBloc = BlocProvider.of<NotificationBloc>(context, listen: false);
     return await showDialog(
         barrierDismissible: false,
@@ -159,7 +159,7 @@ class _ScreenInboxState extends State<ScreenInbox> {
                 actionCorrect: () async {
                   await DBProvider.db.deleteNotificationModelById(item.id!);
                   await DBProvider.db.getAllNotificationModel().then((res) => notificationBloc.add(UpdateNotifications(res)));
-                  if (!mounted) return;
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                 },
                 messageCorrect: 'Eliminar')));

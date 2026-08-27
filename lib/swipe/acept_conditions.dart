@@ -134,10 +134,10 @@ class _ModalAceptTerminState extends State<ModalAceptTermin> {
     );
   }
 
-  getInto(BuildContext context) async {
+  Future<void> getInto(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
     await authService.writeFirstTime(context);
-    if (!mounted) return;
+    if (!context.mounted) return;
     Navigator.pushReplacementNamed(context, 'newlogin');
   }
 }

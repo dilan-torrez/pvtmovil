@@ -31,6 +31,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
+      if (!mounted) return;
       if (AdaptiveTheme.of(context).mode.isDark) {
         setState(() => colorValue = true);
       }
@@ -52,7 +53,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
     }
   }
 
-  verifyBiometric() async {
+  Future<void> verifyBiometric() async {
     final authService = Provider.of<AuthService>(context, listen: false);
     await Future.delayed(const Duration(milliseconds: 50));
 

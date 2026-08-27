@@ -118,7 +118,7 @@ class _CardEcState extends State<CardEc> {
     );
   }
 
-  printDocument(BuildContext context) async {
+  Future<void> printDocument(BuildContext context) async {
     setState(() => btnAccess = false);
     var response = await serviceMethod(mounted, context, 'get', null,
         serviceGetPDFEC(widget.item!.id!), true, true);

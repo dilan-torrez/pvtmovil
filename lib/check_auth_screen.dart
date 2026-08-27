@@ -25,14 +25,16 @@ class CheckAuthScreen extends StatelessWidget {
             if (!snapshot.hasData) return const Text('');
             if (snapshot.data == '') {
               //Primer Ingreso de la aplicacion
-              Future.microtask(() {
-                return goFirstInto(context);
+              Future.microtask(() async {
+                if (!context.mounted) return;
+                await goFirstInto(context);
               });
             } else {
               //lo redirijira al menu de servicios cargando todos los datos de la app
               //del usuario del afiliado
-              Future.microtask(() {
-                return getInfo(context);
+              Future.microtask(() async {
+                if (!context.mounted) return;
+                await getInfo(context);
               });
             }
             //En caso de errores se cargara una pantalla vacia (Opcional)
@@ -44,7 +46,7 @@ class CheckAuthScreen extends StatelessWidget {
   }
 
   /// Decide si mostrar el slider introductorio o ir directo al login
-  goFirstInto(BuildContext context) async {
+  Future<void> goFirstInto(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
     if (await authService.readFirstTime() == '') {
       if (!context.mounted) return;
@@ -68,7 +70,7 @@ class CheckAuthScreen extends StatelessWidget {
   }
 
   /// Carga info del usuario y pasa a la app si está autenticado
-  getInfo(BuildContext context) async {
+  Future<void> getInfo(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
     final notificationBloc = BlocProvider.of<NotificationBloc>(context);
@@ -76,7 +78,7 @@ class CheckAuthScreen extends StatelessWidget {
     final userJson = await authService.readUser();
     if (userJson == '') {
       if (!context.mounted) return;
-      return Navigator.pushReplacement(
+      Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           pageBuilder: (_, __, ___) => const ScreenNewLogin(),
@@ -101,7 +103,7 @@ class CheckAuthScreen extends StatelessWidget {
   }
 
   /// Carga las notificaciones y el ID del afiliado
-  getNotifications(NotificationBloc notificationBloc) async {
+  Future<void> getNotifications(NotificationBloc notificationBloc) async {
     final notifications = await DBProvider.db.getAllNotificationModel();
     notificationBloc.add(UpdateNotifications(notifications));
 

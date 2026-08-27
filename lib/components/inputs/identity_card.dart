@@ -115,7 +115,7 @@ class _IdentityCardState extends State<IdentityCard> {
     );
   }
 
-  functionToltip(bool state) async {
+  Future<void> functionToltip(bool state) async {
     setState(() {
       if (!state) widget.stateAlphanumericFalse();
       dniComplement = state;

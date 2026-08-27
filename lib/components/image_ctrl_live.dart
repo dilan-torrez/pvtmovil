@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muserpol_pvt/bloc/user/user_bloc.dart';
 import 'package:muserpol_pvt/components/button.dart';
+import 'package:muserpol_pvt/utils/permission_helper.dart';
 
 class ImageCtrlLive extends StatefulWidget {
   final Function(String) sendImage;
@@ -53,6 +54,17 @@ class _ImageCtrlLiveState extends State<ImageCtrlLive>
   }
 
   Future<void> _getAvailableCameras() async {
+    // Solicitar permiso de cámara antes de inicializar
+    final hasPermission = await PermissionHelper.requestCameraPermission(context);
+    if (!hasPermission) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Permiso de cámara denegado')),
+        );
+      }
+      return;
+    }
+
     try {
       _availableCameras = await availableCameras();
 
@@ -172,7 +184,7 @@ class _ImageCtrlLiveState extends State<ImageCtrlLive>
     );
   }
 
-  switchCam() {
+  void switchCam() {
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
     if (userBloc.state.stateCam) {
       userBloc.add(UpdateStateBtntoggleCameraLens(false));
@@ -180,7 +192,7 @@ class _ImageCtrlLiveState extends State<ImageCtrlLive>
     }
   }
 
-  takePhoto() async {
+  Future<void> takePhoto() async {
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
     try {
       if (userBloc.state.stateBtntoggleCameraLens) {
