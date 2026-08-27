@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:muserpol_pvt/components/containers.dart';
 import 'package:muserpol_pvt/components/table_row.dart';
@@ -18,7 +17,7 @@ class CardContact extends StatefulWidget {
 
 class _CardContactState extends State<CardContact> {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
-  AvailableMap? itemSelect;
+  SupportedMap? itemSelect;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -41,7 +40,7 @@ class _CardContactState extends State<CardContact> {
                         tableInfo(
                             'Dirección:',
                             GestureDetector(
-                              onTap: () => openMapsSheet(context, Coords(widget.city.latitude!, widget.city.longitude!), widget.city.companyAddress!),
+                              onTap: () => openMapsSheet(context, widget.city.latitude!, widget.city.longitude!, widget.city.companyAddress!),
                               child: Row(
                                 children: [
                                   const Icon(Icons.location_on),
@@ -85,10 +84,14 @@ class _CardContactState extends State<CardContact> {
             ])));
   }
 
-  openMapsSheet(context, Coords coords, String title) async {
+  Future<void> openMapsSheet(BuildContext context, double lat, double lng, String title) async {
     try {
-      final availableMaps = await MapLauncher.installedMaps;
+      final request = MapLauncher.marker(
+        LocationCoords(lat, lng, title: title),
+      );
+      final availableMaps = await request.getSupportedMaps(MapApp.all);
 
+      if (!context.mounted) return;
       showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
@@ -98,13 +101,10 @@ class _CardContactState extends State<CardContact> {
                 children: <Widget>[
                   for (var map in availableMaps)
                     ListTile(
-                        onTap: () => map.showMarker(
-                              coords: coords,
-                              title: title,
-                            ),
-                        title: Text('Abrir: ${map.mapName}'),
-                        leading: SvgPicture.asset(
-                          map.icon,
+                        onTap: () => map.show(),
+                        title: Text('Abrir: ${map.name}'),
+                        leading: Image.memory(
+                          map.iconBytes,
                           height: 30.0,
                           width: 30.0,
                         )),
