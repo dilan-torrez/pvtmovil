@@ -127,8 +127,8 @@ class _ScreenListServiceState extends State<ScreenListService> {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final services = <_ServiceData>[
-      _ServiceData(
+    final services = <ServiceData>[
+      ServiceData(
         key: keyComplemento,
         image: 'assets/images/icon_complement_economic.png',
         title: 'Complemento Económico',
@@ -189,14 +189,14 @@ class _ScreenListServiceState extends State<ScreenListService> {
           }
         },
       ),
-      _ServiceData(
+      ServiceData(
         key: keyAportes,
         image: 'assets/images/icon_contributions.png',
         title: 'Certificación de Aportes',
         description: 'Visualización de aportes sector activo y pasivo.',
         onPressed: () => _goToModule(1),
       ),
-      _ServiceData(
+      ServiceData(
         key: keyPrestamos,
         image: 'assets/images/icon_loans.png',
         title: 'Préstamos',
@@ -325,14 +325,14 @@ class _ScreenListServiceState extends State<ScreenListService> {
   }
 }
 
-class _ServiceData {
+class ServiceData {
   final Key key;
   final String image;
   final String title;
   final String description;
   final VoidCallback onPressed;
 
-  _ServiceData({
+  ServiceData({
     required this.key,
     required this.image,
     required this.title,
@@ -342,7 +342,7 @@ class _ServiceData {
 }
 
 class ServiceGridItem extends StatelessWidget {
-  final _ServiceData service;
+  final ServiceData service;
 
   const ServiceGridItem({super.key, required this.service});
 
