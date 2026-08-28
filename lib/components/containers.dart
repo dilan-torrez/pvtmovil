@@ -33,6 +33,7 @@ class ContainerComponent extends StatelessWidget {
       padding: padding ?? const EdgeInsets.symmetric(vertical: 5),
       width: width,
       height: height,
+      clipBehavior: Clip.none,
       decoration: BoxDecoration(
         color: color,
         border: border ?? Border.all(color: Colors.grey),

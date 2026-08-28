@@ -47,6 +47,8 @@ class _ScreenContactState extends State<ScreenContact> {
             contact != null
                 ? Expanded(
                     child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.only(bottom: 20),
                       child: Column(
                         children: List.generate(
                           contact!.data!.length,
@@ -71,7 +73,6 @@ class _ScreenContactState extends State<ScreenContact> {
                       ),
                     ),
                   ),
-            const SizedBox(height: 20),
           ],
         ),
       ),
