@@ -23,65 +23,65 @@ class _CardContactState extends State<CardContact> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1),
       child: ContainerComponent(
-        child:  Row(children: [
-              Expanded(
-                  child: Column(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(widget.city.name!),
+            const SizedBox(height: 20),
+            Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(3.5),
+                  1: FlexColumnWidth(0.5),
+                  2: FlexColumnWidth(6),
+                },
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: [
-                  Text(widget.city.name!),
-                  const SizedBox(height: 20),
-                  Table(
-                      columnWidths: const {
-                        0: FlexColumnWidth(3.5),
-                        1: FlexColumnWidth(0.5),
-                        2: FlexColumnWidth(6),
-                      },
-                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                      children: [
-                        tableInfo(
-                            'Dirección:',
-                            GestureDetector(
-                              onTap: () => openMapsSheet(context, widget.city.latitude!, widget.city.longitude!, widget.city.companyAddress!),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.location_on),
-                                  Flexible(
-                                      child: Text(
-                                    widget.city.companyAddress!,
-                                    style: const TextStyle(color: Color(0xff439CAB)),
-                                  ))
-                                ],
-                              ),
-                            )),
-                        if (json.decode(widget.city.companyPhones!).length > 0)
-                          tableInfo(
-                              'Teléfonos:',
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  for (var item in json.decode(widget.city.companyPhones!))
-                                    GestureDetector(
-                                      onTap: () => urlauncher.launchUrl(Uri(scheme: 'tel', path: '$item')),
-                                      child: Text('$item', style: const TextStyle(color: Color(0xff439CAB))),
-                                    )
-                                ],
-                              )),
-                        if (json.decode(widget.city.companyCellphones!).length > 0)
-                          tableInfo(
-                              'Celulares:',
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  for (var item in json.decode(widget.city.companyCellphones!))
-                                    GestureDetector(
-                                      onTap: () => urlauncher.launchUrl(Uri(scheme: 'tel', path: '$item')),
-                                      child: Text('$item', style: const TextStyle(color: Color(0xff439CAB))),
-                                    )
-                                ],
-                              )),
-                      ])
-                ],
-              ))
-            ])));
+                  tableInfo(
+                      'Dirección:',
+                      GestureDetector(
+                        onTap: () => openMapsSheet(context, widget.city.latitude!, widget.city.longitude!, widget.city.companyAddress!),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.location_on),
+                            Flexible(
+                                child: Text(
+                              widget.city.companyAddress!,
+                              style: const TextStyle(color: Color(0xff439CAB)),
+                            ))
+                          ],
+                        ),
+                      )),
+                  if (json.decode(widget.city.companyPhones!).length > 0)
+                    tableInfo(
+                        'Teléfonos:',
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (var item in json.decode(widget.city.companyPhones!))
+                              GestureDetector(
+                                onTap: () => urlauncher.launchUrl(Uri(scheme: 'tel', path: '$item')),
+                                child: Text('$item', style: const TextStyle(color: Color(0xff439CAB))),
+                              )
+                          ],
+                        )),
+                  if (json.decode(widget.city.companyCellphones!).length > 0)
+                    tableInfo(
+                        'Celulares:',
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (var item in json.decode(widget.city.companyCellphones!))
+                              GestureDetector(
+                                onTap: () => urlauncher.launchUrl(Uri(scheme: 'tel', path: '$item')),
+                                child: Text('$item', style: const TextStyle(color: Color(0xff439CAB))),
+                              )
+                          ],
+                        )),
+                ])
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> openMapsSheet(BuildContext context, double lat, double lng, String title) async {

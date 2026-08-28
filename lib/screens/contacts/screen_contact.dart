@@ -71,6 +71,7 @@ class _ScreenContactState extends State<ScreenContact> {
                       ),
                     ),
                   ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
