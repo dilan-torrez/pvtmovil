@@ -113,6 +113,12 @@ class _CardContactState extends State<CardContact> {
         return;
       }
 
+      // Debug: mostrar URLs que se generarán
+      for (var map in availableMaps) {
+        final url = map.map.markerUrl(LocationCoords(lat, lng, title: title));
+        debugPrint('🔗 ${map.name} URL: $url');
+      }
+
       if (!context.mounted) return;
       showModalBottomSheet(
         context: context,
