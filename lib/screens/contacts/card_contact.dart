@@ -89,7 +89,26 @@ class _CardContactState extends State<CardContact> {
       final request = MapLauncher.marker(
         LocationCoords(lat, lng, title: title),
       );
-      final availableMaps = await request.getSupportedMaps(MapApp.all);
+      
+      // Lista explícita de apps de mapas soportadas
+      final supportedMaps = [
+        MapApp.google,
+        MapApp.apple,
+        MapApp.waze,
+        MapApp.here,
+        MapApp.yandexMaps,
+        MapApp.osmand,
+      ];
+      
+      final availableMaps = await request.getSupportedMaps(supportedMaps);
+
+      if (availableMaps.isEmpty) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No hay aplicaciones de mapas instaladas')),
+        );
+        return;
+      }
 
       if (!context.mounted) return;
       showModalBottomSheet(
@@ -101,7 +120,10 @@ class _CardContactState extends State<CardContact> {
                 children: <Widget>[
                   for (var map in availableMaps)
                     ListTile(
-                        onTap: () => map.show(),
+                        onTap: () {
+                          Navigator.pop(context);
+                          map.show();
+                        },
                         title: Text('Abrir: ${map.name}'),
                         leading: Image.memory(
                           map.iconBytes,
@@ -115,7 +137,11 @@ class _CardContactState extends State<CardContact> {
         },
       );
     } catch (e) {
-      debugPrint('e $e');
+      debugPrint('Error al abrir mapas: $e');
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 }
