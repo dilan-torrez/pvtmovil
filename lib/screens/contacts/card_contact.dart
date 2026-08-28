@@ -85,6 +85,9 @@ class _CardContactState extends State<CardContact> {
   }
 
   Future<void> openMapsSheet(BuildContext context, double lat, double lng, String title) async {
+    // Debug: mostrar coordenadas que se están usando
+    debugPrint('🗺️ Coordenadas recibidas - Lat: $lat, Lng: $lng, Título: $title');
+    
     try {
       final request = MapLauncher.marker(
         LocationCoords(lat, lng, title: title),
@@ -137,7 +140,7 @@ class _CardContactState extends State<CardContact> {
         },
       );
     } catch (e) {
-      debugPrint('Error al abrir mapas: $e');
+      debugPrint('❌ Error al abrir mapas: $e');
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),

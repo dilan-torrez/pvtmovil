@@ -2,6 +2,7 @@
 //
 //     final contactsModel = contactsModelFromJson(jsonString);
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 ContactsModel contactsModelFromJson(String str) =>
     ContactsModel.fromJson(json.decode(str));
@@ -60,8 +61,16 @@ class City {
   factory City.fromJson(Map<String, dynamic> json) => City(
         id: json["id"],
         name: json["name"],
-        latitude: double.tryParse(json["latitude"].toString()),
-        longitude: double.tryParse(json["longitude"].toString()),
+        latitude: () {
+          final lat = double.tryParse(json["latitude"].toString());
+          debugPrint('📍 Ciudad: ${json["name"]} - Latitud raw: ${json["latitude"]} → parsed: $lat');
+          return lat;
+        }(),
+        longitude: () {
+          final lng = double.tryParse(json["longitude"].toString());
+          debugPrint('📍 Ciudad: ${json["name"]} - Longitud raw: ${json["longitude"]} → parsed: $lng');
+          return lng;
+        }(),
         companyAddress: json["companyAddress"],
         phonePrefix: json["phonePrefix"],
         companyPhones: json["companyPhones"],
