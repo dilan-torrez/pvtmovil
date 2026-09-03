@@ -84,40 +84,28 @@ class _CardContactState extends State<CardContact> {
     );
   }
 
-  Future<void> openMapsSheet(BuildContext context, double lat, double lng, String title) async {
-    // Debug: mostrar coordenadas que se están usando
+    Future<void> openMapsSheet(BuildContext context, double lat, double lng, String title) async {
     debugPrint('🗺️ Coordenadas recibidas - Lat: $lat, Lng: $lng, Título: $title');
-    
+
     try {
-      final request = MapLauncher.marker(
-        LocationCoords(lat, lng, title: title),
-      );
-      
-      // Lista explícita de apps de mapas soportadas
-      final supportedMaps = [
+      final candidates = <MapApp>[
         MapApp.google,
         MapApp.apple,
         MapApp.waze,
         MapApp.here,
         MapApp.yandexMaps,
-        MapApp.osmand,
+        MapApp.osmand, // <- si el usuario tiene OsmAnd, aparecerá aquí solo
       ];
-      
-      final availableMaps = await request.getSupportedMaps(supportedMaps);
 
-      if (availableMaps.isEmpty) {
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No hay aplicaciones de mapas instaladas')),
-        );
-        return;
-      }
+      final request = MapLauncher.marker(
+        LocationCoords(lat, lng, title: title.isEmpty ? 'Ubicación' : title),
+      );
+      final supportedMaps = await request.getSupportedMaps(candidates);
+      final availableMaps =
+          supportedMaps.where((map) => map.isInstalled).toList();
 
-      // Debug: mostrar URLs que se generarán
-      for (var map in availableMaps) {
-        final url = map.map.markerUrl(LocationCoords(lat, lng, title: title));
-        debugPrint('🔗 ${map.name} URL: $url');
-      }
+      const osmUrl =
+          'https://www.openstreetmap.org/?mlat=%LAT%&mlon=%LON%#map=16/%LAT%/%LON%';
 
       if (!context.mounted) return;
       showModalBottomSheet(
@@ -125,20 +113,43 @@ class _CardContactState extends State<CardContact> {
         builder: (BuildContext context) {
           return SafeArea(
             child: SingleChildScrollView(
-              child: Wrap(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  for (var map in availableMaps)
+                  if (availableMaps.isEmpty)
+                    const ListTile(
+                      leading: Icon(Icons.map, size: 30.0),
+                      title: Text('No se detectaron aplicaciones de mapas'),
+                    ),
+                  for (final map in availableMaps)
                     ListTile(
-                        onTap: () {
-                          Navigator.pop(context);
-                          map.show();
-                        },
-                        title: Text('Abrir: ${map.name}'),
-                        leading: Image.memory(
-                          map.iconBytes,
-                          height: 30.0,
-                          width: 30.0,
-                        )),
+                      onTap: () {
+                        Navigator.pop(context);
+                        map.show();
+                      },
+                      title: Text('Abrir: ${map.name}'),
+                      leading: SizedBox(
+                        height: 30.0,
+                        width: 30.0,
+                        child: Image.memory(map.iconBytes),
+                      ),
+                    ),
+                  // OpenStreetMap web: siempre disponible, sin ambigüedad de chooser
+                  ListTile(
+                    leading: const Icon(Icons.public, size: 30.0, color: Color(0xff439CAB)),
+                    title: const Text('Abrir: OpenStreetMap (web)'),
+                    subtitle: const Text('Se abre en el navegador'),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      final url = osmUrl
+                          .replaceAll('%LAT%', lat.toString())
+                          .replaceAll('%LON%', lng.toString());
+                      await urlauncher.launchUrl(
+                        Uri.parse(url),
+                        mode: urlauncher.LaunchMode.externalApplication,
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
