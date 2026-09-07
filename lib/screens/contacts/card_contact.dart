@@ -127,7 +127,7 @@ class _CardContactState extends State<CardContact> {
                         Navigator.pop(context);
                         map.show();
                       },
-                      title: Text('Abrir: ${map.name}'),
+                      title: Text('Abrir en ${map.name}'),
                       leading: SizedBox(
                         height: 30.0,
                         width: 30.0,
@@ -137,7 +137,7 @@ class _CardContactState extends State<CardContact> {
                   // OpenStreetMap web: siempre disponible, sin ambigüedad de chooser
                   ListTile(
                     leading: const Icon(Icons.public, size: 30.0, color: Color(0xff439CAB)),
-                    title: const Text('Abrir: OpenStreetMap (web)'),
+                    title: const Text('Abrir en OpenStreetMap (web)'),
                     subtitle: const Text('Se abre en el navegador'),
                     onTap: () async {
                       Navigator.pop(context);
