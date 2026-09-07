@@ -8,55 +8,18 @@
 -dontwarn com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
 -dontwarn com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions$Builder
 -dontwarn com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
--dontwarn androidx.window.extensions.WindowExtensions
--dontwarn androidx.window.extensions.WindowExtensionsProvider
--dontwarn androidx.window.extensions.area.ExtensionWindowAreaPresentation
--dontwarn androidx.window.extensions.area.ExtensionWindowAreaStatus
--dontwarn androidx.window.extensions.area.WindowAreaComponent
--dontwarn androidx.window.extensions.layout.DisplayFeature
--dontwarn androidx.window.extensions.layout.FoldingFeature
--dontwarn androidx.window.extensions.layout.WindowLayoutComponent
--dontwarn androidx.window.extensions.layout.WindowLayoutInfo
--dontwarn androidx.window.extensions.embedding.ActivityStack
--dontwarn androidx.window.extensions.embedding.ActivityEmbeddingComponent
--dontwarn androidx.window.extensions.embedding.ActivityRule
--dontwarn androidx.window.extensions.embedding.ActivityRule$Builder
--dontwarn androidx.window.extensions.embedding.EmbeddingRule
--dontwarn androidx.window.extensions.embedding.SplitAttributes
--dontwarn androidx.window.extensions.embedding.SplitAttributes$Builder
--dontwarn androidx.window.extensions.embedding.SplitAttributes$SplitType
--dontwarn androidx.window.extensions.embedding.SplitAttributes$SplitType$ExpandContainersSplitType
--dontwarn androidx.window.extensions.embedding.SplitAttributes$SplitType$HingeSplitType
--dontwarn androidx.window.extensions.embedding.SplitAttributes$SplitType$RatioSplitType
--dontwarn androidx.window.extensions.embedding.SplitAttributesCalculatorParams
--dontwarn androidx.window.extensions.embedding.SplitInfo
--dontwarn androidx.window.extensions.embedding.SplitPairRule
--dontwarn androidx.window.extensions.embedding.SplitPairRule$Builder
--dontwarn androidx.window.extensions.embedding.SplitPlaceholderRule
--dontwarn androidx.window.extensions.embedding.SplitPlaceholderRule$Builder
--dontwarn androidx.window.sidecar.SidecarDeviceState
--dontwarn androidx.window.sidecar.SidecarDisplayFeature
--dontwarn androidx.window.sidecar.SidecarInterface$SidecarCallback
--dontwarn androidx.window.sidecar.SidecarInterface
--dontwarn androidx.window.sidecar.SidecarProvider
--dontwarn androidx.window.sidecar.SidecarWindowLayoutInfo
-
 # Keep androidx.window classes to avoid R8 errors
+# (el -dontwarn androidx.window.** cubre todas las extensiones/sidecar)
 -keep class androidx.window.** { *; }
--keep interface androidx.window.** { *; }
 -dontwarn androidx.window.**
 
 # ========================
 # REGLAS PARA FLUTTER
 # ========================
 
-# Conservar la funcionalidad principal de Flutter
--keep class io.flutter.app.** { *; }
--keep class io.flutter.plugin.**  { *; }
--keep class io.flutter.util.**  { *; }
--keep class io.flutter.view.**  { *; }
--keep class io.flutter.**  { *; }
--keep class io.flutter.plugins.**  { *; }
+# Conservar la funcionalidad principal de Flutter.
+# Los keep específicos de app/plugin/util/view quedan subsumidos por io.flutter.**
+-keep class io.flutter.** { *; }
 
 # ========================
 # REGLAS DE ENDURECIMIENTO (SECURITY HARDENING)
@@ -106,8 +69,10 @@
     *** *PKCS7*(...) return null;
 }
 
-# 8. Mantener solo métodos GCM y OAEP
--keep class * {
+# 8. Mantener visibles SOLO los símbolos GCM/OAEP de flutter_secure_storage
+# (antes "class *" bloqueaba la ofuscación de TODA la app; al restringirlo,
+# R8 puede ofuscar el resto del proyecto sin perder el hardening de GCM)
+-keep class com.it_nomads.fluttersecurestorage.** {
     *** *GCM*(...);
     *** *Gcm*(...);
     *** *gcm*(...);
@@ -120,7 +85,8 @@
 
 # 10. Shrinking agresivo para eliminar código no usado
 # Esto es crítico para que R8 realmente elimine las clases CBC
--optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+# (se re-habilitan "field" y "class/merging", optimizaciones que reducen el DEX)
+-optimizations !code/simplification/arithmetic,!code/simplification/cast
 -optimizationpasses 5
 -allowaccessmodification
 
