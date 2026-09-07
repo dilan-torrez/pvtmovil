@@ -130,7 +130,7 @@ class _ScreenListServiceState extends State<ScreenListService> {
     final services = <ServiceData>[
       ServiceData(
         key: keyComplemento,
-        image: 'assets/images/icon_complement_economic.png',
+        image: 'assets/images/icon_complement_economic.webp',
         title: 'Complemento Económico',
         description: 'Solicitud y seguimiento de trámites.',
         onPressed: () async {
@@ -191,14 +191,14 @@ class _ScreenListServiceState extends State<ScreenListService> {
       ),
       ServiceData(
         key: keyAportes,
-        image: 'assets/images/icon_contributions.png',
+        image: 'assets/images/icon_contributions.webp',
         title: 'Certificación de Aportes',
         description: 'Visualización de aportes sector activo y pasivo.',
         onPressed: () => _goToModule(1),
       ),
       ServiceData(
         key: keyPrestamos,
-        image: 'assets/images/icon_loans.png',
+        image: 'assets/images/icon_loans.webp',
         title: 'Préstamos',
         description: 'Seguimiento de trámites y evaluación referencial.',
         onPressed: () => _goToModule(2),

@@ -315,7 +315,7 @@ class _SendMessageLogin extends State<SendMessageLogin> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20.r),
                       child: Image.asset(
-                        'assets/images/mensaje.gif',
+                        'assets/images/mensaje.webp',
                         height: 120.h,
                         fit: BoxFit.contain,
                       ),
