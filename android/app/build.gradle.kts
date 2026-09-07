@@ -36,7 +36,7 @@ android {
         applicationId = "com.muserpol.pvt"
         minSdk = 24
         targetSdk = 36
-        versionCode = 83
+        versionCode = 84
         versionName = "4.1.3"
         multiDexEnabled = true
     }
@@ -81,7 +81,8 @@ android {
     }
 
     lint {
-        checkReleaseBuilds = false
+        checkReleaseBuilds = true
+        abortOnError = false
     }
 }
 
