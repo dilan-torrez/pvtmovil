@@ -11,3 +11,10 @@ class UpdateLoan extends LoanEvent {
 class ClearLoans extends LoanEvent {
   ClearLoans();
 }
+
+class LoanLoadState extends LoanEvent {
+  final bool isLoading;
+  final bool hasError;
+
+  LoanLoadState({required this.isLoading, this.hasError = false});
+}

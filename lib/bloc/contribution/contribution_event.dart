@@ -13,3 +13,10 @@ class UpdateContributions extends ContributionEvent {
 class ClearContributions extends ContributionEvent {
   ClearContributions();
 }
+
+class ContributionLoadState extends ContributionEvent {
+  final bool isLoading;
+  final bool hasError;
+
+  ContributionLoadState({required this.isLoading, this.hasError = false});
+}

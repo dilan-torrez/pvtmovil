@@ -5,7 +5,27 @@ class LoanState {
 
   final bool existLoan;
 
-  const LoanState({this.loan, this.existLoan = false});
+  final bool isLoading;
 
-  LoanState copyWith({bool? existLoan, LoanModel? loan}) => LoanState(existLoan: existLoan ?? this.existLoan, loan: loan ?? this.loan);
+  final bool hasError;
+
+  const LoanState({
+    this.loan,
+    this.existLoan = false,
+    this.isLoading = false,
+    this.hasError = false,
+  });
+
+  LoanState copyWith({
+    bool? existLoan,
+    LoanModel? loan,
+    bool? isLoading,
+    bool? hasError,
+  }) =>
+      LoanState(
+        existLoan: existLoan ?? this.existLoan,
+        loan: loan ?? this.loan,
+        isLoading: isLoading ?? this.isLoading,
+        hasError: hasError ?? this.hasError,
+      );
 }

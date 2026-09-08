@@ -6,7 +6,14 @@ part 'contribution_state.dart';
 
 class ContributionBloc extends Bloc<ContributionEvent, ContributionState> {
   ContributionBloc() : super(const ContributionState()) {
-    on<UpdateContributions>((event, emit) => emit(state.copyWith(existContribution: true, contribution: event.contribution)));
-    on<ClearContributions>((event, emit) => emit(state.copyWith(existContribution: false)));
+    on<UpdateContributions>((event, emit) => emit(state.copyWith(
+        existContribution: true,
+        contribution: event.contribution,
+        isLoading: false,
+        hasError: false)));
+    on<ClearContributions>(
+        (event, emit) => emit(const ContributionState()));
+    on<ContributionLoadState>((event, emit) =>
+        emit(state.copyWith(isLoading: event.isLoading, hasError: event.hasError)));
   }
 }
