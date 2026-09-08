@@ -29,7 +29,7 @@ android {
         applicationId = "com.muserpol.pvt"
         minSdk = 24
         targetSdk = 36
-        versionCode = 84
+        versionCode = 85
         versionName = "4.1.3"
         multiDexEnabled = true
     }
