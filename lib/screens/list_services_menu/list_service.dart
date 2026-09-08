@@ -36,31 +36,37 @@ class _ScreenListServiceState extends State<ScreenListService> {
 
   TutorialCoachMark? tutorialCoachMark;
   bool isGridView = false;
+  bool _loadingData = true;
 
   @override
   void initState() {
     super.initState();
     checkVersion(mounted, context);
     _loadInitialData();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.showTutorial && mounted) {
-        _showTutorial();
-      }
-    });
   }
 
   Future<void> _loadInitialData() async {
     final userBloc =
         BlocProvider.of<UserBloc>(context, listen: false).state.user;
+    final isInitial = _loadingData;
 
-    if (userBloc?.isEconomicComplement == true) {
+    try {
+      if (userBloc?.isEconomicComplement == true) {
+        if (!mounted) return;
+        await loadGeneralServicesComplementEconomic(context);
+      }
+
       if (!mounted) return;
-      await loadGeneralServicesComplementEconomic(context);
+      await loadGeneralServices(context);
+    } finally {
+      if (isInitial && mounted) {
+        setState(() => _loadingData = false);
+      }
     }
 
-    if (!mounted) return;
-    await loadGeneralServices(context);
+    if (isInitial && widget.showTutorial && mounted) {
+      _showTutorial();
+    }
   }
 
   void _showTutorial() {
@@ -217,29 +223,31 @@ class _ScreenListServiceState extends State<ScreenListService> {
       child: Scaffold(
         appBar: AppBarDualTitle(keyMenuButton: keyMenuButton),
         drawer: const MenuDrawer(),
-        body: CustomMaterialIndicator(
-          onRefresh: () async {
-            await _loadInitialData();
-            await Future.delayed(const Duration(seconds: 2));
-          },
-          trigger: IndicatorTrigger.leadingEdge,
-          triggerMode: IndicatorTriggerMode.onEdge,
-          trailingScrollIndicatorVisible: false,
-          notificationPredicate: (notification) => notification.depth == 0,
-          backgroundColor: const Color(0xff419388),
-          indicatorBuilder: (context, controller) {
-            return const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                strokeWidth: 3,
-              ),
-            );
-          },
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            children: [
+        body: Stack(
+          children: [
+            CustomMaterialIndicator(
+              onRefresh: () async {
+                await _loadInitialData();
+                await Future.delayed(const Duration(seconds: 2));
+              },
+              trigger: IndicatorTrigger.leadingEdge,
+              triggerMode: IndicatorTriggerMode.onEdge,
+              trailingScrollIndicatorVisible: false,
+              notificationPredicate: (notification) => notification.depth == 0,
+              backgroundColor: const Color(0xff419388),
+              indicatorBuilder: (context, controller) {
+                return const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 3,
+                  ),
+                );
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -318,6 +326,51 @@ class _ScreenListServiceState extends State<ScreenListService> {
               ],
               SizedBox(height: 20.h),
             ],
+          ),
+        ),
+        if (_loadingData) _buildLoadingOverlay(),
+      ],
+      ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Positioned.fill(
+      child: AbsorbPointer(
+        child: ColoredBox(
+          color: Colors.black.withValues(alpha: 0.35),
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 28,
+                vertical: 24,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xff419388),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Cargando tus datos...',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
