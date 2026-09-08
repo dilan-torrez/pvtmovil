@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muserpol_pvt/components/button.dart';
 import 'package:muserpol_pvt/components/susessful.dart';
 import 'package:muserpol_pvt/screens/list_services_menu/service_loader.dart';
@@ -64,9 +65,29 @@ class _ScreenListServiceState extends State<ScreenListService> {
       }
     }
 
-    if (isInitial && widget.showTutorial && mounted) {
+    if (isInitial && widget.showTutorial && mounted &&
+        await _shouldShowTutorial()) {
       _showTutorial();
     }
+  }
+
+  Future<bool> _shouldShowTutorial() async {
+    final userBloc = BlocProvider.of<UserBloc>(context, listen: false).state.user;
+    final tutorialKey = userBloc?.affiliateId != null
+        ? 'tutorial_omited_${userBloc!.affiliateId}'
+        : 'tutorial_omited';
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(tutorialKey) == true) return false;
+    return true;
+  }
+
+  Future<void> _markTutorialOmited() async {
+    final userBloc = BlocProvider.of<UserBloc>(context, listen: false).state.user;
+    final tutorialKey = userBloc?.affiliateId != null
+        ? 'tutorial_omited_${userBloc!.affiliateId}'
+        : 'tutorial_omited';
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(tutorialKey, true);
   }
 
   void _showTutorial() {
@@ -88,7 +109,11 @@ class _ScreenListServiceState extends State<ScreenListService> {
       ),
       paddingFocus: 10,
       opacityShadow: 0.8,
-      onFinish: () => debugPrint("Tutorial Finalizado"),
+      onFinish: () => _markTutorialOmited(),
+      onSkip: () {
+        _markTutorialOmited();
+        return true;
+      },
     )..show(context: context);
   }
 
