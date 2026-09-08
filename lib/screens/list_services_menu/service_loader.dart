@@ -14,16 +14,18 @@ import 'package:muserpol_pvt/bloc/contribution/contribution_bloc.dart';
 import 'package:muserpol_pvt/bloc/loan/loan_bloc.dart';
 import 'package:muserpol_pvt/bloc/user/user_bloc.dart';
 
+bool _contributionsLoading = false;
+bool _loansLoading = false;
+
 Future<void> loadGeneralServices(BuildContext context) async {
-  await _loadContributions(context);
-  if (!context.mounted) return;
-  await _loadLoans(context);
+  await Future.wait([loadContributions(context), loadLoans(context)]);
 }
 
 Future<void> loadGeneralServicesComplementEconomic(BuildContext context) async {
-  await loadEconomicComplementServices(context);
-  if (!context.mounted) return;
-  await getProcessingPermit(context);
+  await Future.wait([
+    loadEconomicComplementServices(context),
+    getProcessingPermit(context),
+  ]);
 }
 
 Future<void> loadEconomicComplementServices(BuildContext context) async {
@@ -98,29 +100,44 @@ Future<void> getProcessingPermit(BuildContext context) async {
 
 //FUNCIONES RELACIONADOS A LO GENERAL
 
-Future<void> _loadContributions(BuildContext context) async {
-  final authService = Provider.of<AuthService>(context, listen: false);
-  final biometric =
-      biometricUserModelFromJson(await authService.readBiometric());
-  if (!context.mounted) return;
+Future<void> loadContributions(BuildContext context, {bool force = false}) async {
+  if (_contributionsLoading) return;
   final contributionBloc =
       BlocProvider.of<ContributionBloc>(context, listen: false);
+  if (!force && contributionBloc.state.existContribution) return;
 
+  _contributionsLoading = true;
+  contributionBloc.add(ContributionLoadState(isLoading: true));
+  var success = false;
+  try {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final biometric =
+        biometricUserModelFromJson(await authService.readBiometric());
+    if (!context.mounted) return;
+    var response = await serviceMethod(
+      true,
+      context,
+      'get',
+      null,
+      serviceContributions(biometric.affiliateId!),
+      true,
+      true,
+    );
+
+    if (!context.mounted) return;
+    if (response != null) {
+      final model = contributionModelFromJson(response.body);
+      _processContributions(model);
+      contributionBloc.add(UpdateContributions(model));
+      success = true;
+    }
+  } finally {
+    _contributionsLoading = false;
+  }
   if (!context.mounted) return;
-  var response = await serviceMethod(
-    true,
-    context,
-    'get',
-    null,
-    serviceContributions(biometric.affiliateId!),
-    true,
-    true,
-  );
-
-  if (response != null) {
-    final model = contributionModelFromJson(response.body);
-    _processContributions(model);  // NUEVO: Procesar datos
-    contributionBloc.add(UpdateContributions(model));
+  if (!success) {
+    contributionBloc.add(
+        ContributionLoadState(isLoading: false, hasError: true));
   }
 }
 
@@ -155,25 +172,39 @@ void _processContributions(ContributionModel model) {
   }
 }
 
-Future<void> _loadLoans(BuildContext context) async {
-  final authService = Provider.of<AuthService>(context, listen: false);
-  final biometric =
-      biometricUserModelFromJson(await authService.readBiometric());
-  if (!context.mounted) return;
+Future<void> loadLoans(BuildContext context, {bool force = false}) async {
+  if (_loansLoading) return;
   final loanBloc = BlocProvider.of<LoanBloc>(context, listen: false);
+  if (!force && loanBloc.state.existLoan) return;
 
+  _loansLoading = true;
+  loanBloc.add(LoanLoadState(isLoading: true));
+  var success = false;
+  try {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final biometric =
+        biometricUserModelFromJson(await authService.readBiometric());
+    if (!context.mounted) return;
+    var response = await serviceMethod(
+      true,
+      context,
+      'get',
+      null,
+      serviceLoans(biometric.affiliateId!),
+      true,
+      true,
+    );
+
+    if (!context.mounted) return;
+    if (response != null) {
+      loanBloc.add(UpdateLoan(loanModelFromJson(response.body)));
+      success = true;
+    }
+  } finally {
+    _loansLoading = false;
+  }
   if (!context.mounted) return;
-  var response = await serviceMethod(
-    true,
-    context,
-    'get',
-    null,
-    serviceLoans(biometric.affiliateId!),
-    true,
-    true,
-  );
-
-  if (response != null) {
-    loanBloc.add(UpdateLoan(loanModelFromJson(response.body)));
+  if (!success) {
+    loanBloc.add(LoanLoadState(isLoading: false, hasError: true));
   }
 }
