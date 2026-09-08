@@ -9,6 +9,7 @@ import 'package:muserpol_pvt/screens/pages/contributions_pages/tabs_contribution
 import 'package:muserpol_pvt/services/auth_service.dart';
 import 'package:muserpol_pvt/services/service_method.dart';
 import 'package:muserpol_pvt/services/services.dart';
+import 'package:muserpol_pvt/screens/list_services_menu/service_loader.dart';
 import 'package:muserpol_pvt/utils/save_document.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
@@ -118,14 +119,42 @@ class _ScreenContributionsStateNew extends State<ScreenContributionsNew> {
           ),
         ),
         !contributionBloc.existContribution
-            ? Center(
-                child: Image.asset(
-                'assets/images/load.gif',
-                fit: BoxFit.cover,
-                height: 20,
-              ))
+            ? contributionBloc.hasError
+                ? _buildLoadError(
+                    'No se pudieron cargar tus aportes.',
+                    () => loadContributions(context),
+                  )
+                : Center(
+                    child: Image.asset(
+                    'assets/images/load.gif',
+                    fit: BoxFit.cover,
+                    height: 20,
+                  ))
             : const TabsContributionsNew(),
       ],
+    );
+  }
+
+  Widget _buildLoadError(String message, VoidCallback onRetry) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.cloud_off, size: 40, color: Colors.grey),
+          const SizedBox(height: 8),
+          Text(message, textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xff419388),
+              foregroundColor: Colors.white,
+            ),
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Reintentar'),
+          ),
+        ],
+      ),
     );
   }
 
