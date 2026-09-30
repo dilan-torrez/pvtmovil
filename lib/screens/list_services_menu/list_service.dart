@@ -234,6 +234,13 @@ class _ScreenListServiceState extends State<ScreenListService> {
         description: 'Seguimiento de trámites y evaluación referencial.',
         onPressed: () => _goToModule(2),
       ),
+      ServiceData(
+        key: keyBeneficios,
+        image: 'assets/images/icon_retFund.png',
+        title: 'Fondo de Retiro y Cuota Auxilio Mortuorio',
+        description: 'Seguimiento de fondo de retiro.',
+        onPressed: () => _goToModule(3),
+      ),
     ];
 
     return PopScope(
