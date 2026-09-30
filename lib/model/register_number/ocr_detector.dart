@@ -103,6 +103,71 @@ class TextDetector {
     return matches;
   }
 
+  static List<String> _extractDigitCandidates(RecognizedText recognizedText) {
+    final candidates = <String>{};
+
+    void add(String s) {
+      final d = s.replaceAll(RegExp(r'[^0-9]'), '');
+      if (d.length >= 4) candidates.add(d);
+    }
+
+    add(recognizedText.text);
+    for (final block in recognizedText.blocks) {
+      add(block.text);
+      for (final run in RegExp(r'\d{4,}').allMatches(block.text)) {
+        add(run.group(0)!);
+      }
+      for (final line in block.lines) {
+        add(line.text);
+        for (final run in RegExp(r'\d{4,}').allMatches(line.text)) {
+          add(run.group(0)!);
+        }
+      }
+    }
+    return candidates.toList();
+  }
+
+  static bool _fuzzyCiMatch(List<String> candidates, String userDigits) {
+    // Cédulas con sufijo alfanumérico (ej. "4924581 LP", nacionalizados)
+    // se comparan solo por dígitos; las letras del sufijo no interfiere.
+    final maxErrors = userDigits.length >= 10
+        ? 2
+        : (userDigits.length >= 5 ? 1 : 0);
+    for (final candidate in candidates) {
+      if (candidate == userDigits) return true;
+      for (final window in [userDigits.length, userDigits.length + 1]) {
+        if (candidate.length < window) continue;
+        for (int i = 0; i + window <= candidate.length; i++) {
+          final sub = candidate.substring(i, i + window);
+          if (_levenshtein(sub, userDigits) <= maxErrors) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  static int _levenshtein(String a, String b) {
+    if (a == b) return 0;
+    if (a.isEmpty) return b.length;
+    if (b.isEmpty) return a.length;
+    final prev = List<int>.generate(b.length + 1, (i) => i);
+    final curr = List<int>.filled(b.length + 1, 0);
+    for (int i = 1; i <= a.length; i++) {
+      curr[0] = i;
+      for (int j = 1; j <= b.length; j++) {
+        final cost =
+            a.codeUnitAt(i - 1) == b.codeUnitAt(j - 1) ? 0 : 1;
+        curr[j] = [
+          curr[j - 1] + 1,
+          prev[j] + 1,
+          prev[j - 1] + cost,
+        ].reduce((x, y) => x < y ? x : y);
+      }
+      prev.setRange(0, b.length + 1, curr);
+    }
+    return curr[b.length];
+  }
+
   static DocumentValidationResult _validateDocument(String detectedText) {
     final text = detectedText.toLowerCase();
     int score = 0;
