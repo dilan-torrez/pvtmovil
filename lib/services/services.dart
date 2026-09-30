@@ -77,6 +77,12 @@ String serviceGetRetirementFunds(int affiliateId) =>
 //IMPRIMIR LA LIQUIDACION DE UN TRAMITE DE FONDO DE RETIRO
 String servicePrintRetFunLiquidation(int retirementFundId) =>
     '$hostGATEWAY/$reazonMovil/retFunLiquidationPrint/$retirementFundId';
+//SE OBTIENE LOS TRAMITES DE CUOTA Y AUXILIO MORTUORIO DEL USUARIO
+String serviceGetQuotaAid(int affiliateId) =>
+    '$hostGATEWAY/$reazonMovil/quotaAidMortuaries/$affiliateId';
+//IMPRIMIR LA LIQUIDACION DE UN TRAMITE DE CUOTA Y AUXILIO MORTUORIO
+String servicePrintQuotaAidLiquidation(int quotaAidId) =>
+    '$hostGATEWAY/$reazonMovil/quotaAidLiquidationPrint/$quotaAidId';
 //"CIUDADANIA DIGITAL -SERVICIO DE AUTENTICACION"
 String serviceGetCredentials() =>
     '$hostGATEWAY/$auth/credentialsCitizenshipDigital';
