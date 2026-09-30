@@ -4,6 +4,7 @@ import 'package:muserpol_pvt/screens/navigator_down.dart';
 import 'package:muserpol_pvt/screens/pages/complement_pages/complement_page_new.dart';
 import 'package:muserpol_pvt/screens/pages/complement_pages/history_complement.dart';
 import 'package:muserpol_pvt/screens/pages/contributions_pages/contributions_page_new.dart';
+import 'package:muserpol_pvt/screens/pages/benefits_pages/benefits_page_new.dart';
 import 'package:muserpol_pvt/screens/pages/loans_pages/loans_page_new.dart';
 import 'package:muserpol_pvt/screens/pages/menu.dart';
 
@@ -34,6 +35,8 @@ class _NavigatorBarGeneralState extends State<NavigatorBarGeneral> {
       return const ScreenContributionsNew();
     } else if (_currentIndex == 2) {
       return const ScreenLoansNew(openModalOnInit: true);
+    } else if (_currentIndex == 3) {
+      return const ScreenBenefitsNew();
     }
     return const PlaceholderScreen(title: 'Sin módulo');
   }
