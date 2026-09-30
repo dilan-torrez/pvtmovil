@@ -50,7 +50,15 @@ class TextDetector {
       final cleanedDetectedText = recognizedText.text.toLowerCase().trim();
       final cleanedUserInput = userInput.toLowerCase().trim();
 
-      final match = cleanedDetectedText.contains(cleanedUserInput);
+      final rawContains = cleanedDetectedText.contains(cleanedUserInput);
+
+      // Comparación difusa del número de cédula tolerando errores típicos de OCR
+      final userDigits = userInput.replaceAll(RegExp(r'[^0-9]'), '');
+      final digitMatch = userDigits.length >= 4
+          ? _fuzzyCiMatch(_extractDigitCandidates(recognizedText), userDigits)
+          : false;
+
+      final match = rawContains || digitMatch;
 
       filesState.updateStateFiles(item.id, match);
 
