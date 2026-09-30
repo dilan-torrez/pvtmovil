@@ -71,6 +71,12 @@ String servicePrintLoans(int loanId) =>
 //IMPRIMIR EL KARDEX DEL PRESTAMO
 String servicePrintKadex(int loanId) =>
     '$hostGATEWAY/$reazonMovil/loanPrintKardex/$loanId';
+//SE OBTIENE LOS TRAMITES DE FONDO DE RETIRO DEL USUARIO
+String serviceGetRetirementFunds(int affiliateId) =>
+    '$hostGATEWAY/$reazonMovil/retFunRetirementFunds/$affiliateId';
+//IMPRIMIR LA LIQUIDACION DE UN TRAMITE DE FONDO DE RETIRO
+String servicePrintRetFunLiquidation(int retirementFundId) =>
+    '$hostGATEWAY/$reazonMovil/retFunLiquidationPrint/$retirementFundId';
 //"CIUDADANIA DIGITAL -SERVICIO DE AUTENTICACION"
 String serviceGetCredentials() =>
     '$hostGATEWAY/$auth/credentialsCitizenshipDigital';
