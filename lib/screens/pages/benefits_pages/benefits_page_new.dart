@@ -76,6 +76,62 @@ class _ScreenBenefitsNewState extends State<ScreenBenefitsNew> {
         .toList();
   }
 
+  Future<void> _printDocument(
+      int id, String url, String folder, String fileName) async {
+    if (_printingId != null) return;
+
+    setState(() => _printingId = id);
+
+    try {
+      var response = await serviceMethod(mounted, context, 'get', null, url,
+          true, false);
+
+      if (response == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo obtener el documento')),
+        );
+        return;
+      }
+
+      if (response.bodyBytes.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('No se recibieron datos del servidor')),
+        );
+        return;
+      }
+
+      final pdfHeader = String.fromCharCodes(response.bodyBytes.take(4));
+      if (!pdfHeader.startsWith('%PDF')) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('El archivo recibido no es un PDF válido')),
+        );
+        return;
+      }
+
+      final pathFile = await saveFile(folder, fileName, response.bodyBytes);
+      final result = await OpenFilex.open(pathFile);
+
+      if (result.type != ResultType.done) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al abrir el archivo: ${result.message}')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al procesar el documento: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _printingId = null);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -165,63 +221,6 @@ class _ScreenBenefitsNewState extends State<ScreenBenefitsNew> {
         ],
       ),
     );
-  }
-
-  Future<void> _printDocument(
-      int id, String url, String folder, String fileName) async {
-    if (_printingId != null) return;
-
-    setState(() => _printingId = id);
-
-    try {
-      var response = await serviceMethod(mounted, context, 'get', null, url,
-          true, false);
-
-      if (response == null) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se pudo obtener el documento')),
-        );
-        return;
-      }
-
-      if (response.bodyBytes.isEmpty) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('No se recibieron datos del servidor')),
-        );
-        return;
-      }
-
-      final pdfHeader = String.fromCharCodes(response.bodyBytes.take(4));
-      if (!pdfHeader.startsWith('%PDF')) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('El archivo recibido no es un PDF válido')),
-        );
-        return;
-      }
-
-      final pathFile = await saveFile(folder, fileName, response.bodyBytes);
-
-      final result = await OpenFilex.open(pathFile);
-
-      if (result.type != ResultType.done) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al abrir el archivo: ${result.message}')),
-        );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al procesar el documento: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _printingId = null);
-    }
   }
 
   Widget _tramitesSection(
