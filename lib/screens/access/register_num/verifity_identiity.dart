@@ -220,6 +220,17 @@ class _RegisterIdentityScreenState extends State<RegisterIdentityScreen> {
         if (mounted) setState(() => _showVerifying = false);
         if (result.match) {
           _showImagePreview(context, croppedFile, isFront: true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "No se pudo verificar el número de cédula, intente nuevamente con mejor iluminación.",
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.orange[800],
+              duration: const Duration(seconds: 3),
+            ),
+          );
         }
       } else {
         if (mounted) setState(() => _showVerifying = false);
