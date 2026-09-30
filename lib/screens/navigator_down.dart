@@ -84,6 +84,19 @@ class _NavigationDownState extends State<NavigationDown> {
             label: "Préstamos",
           )
         ];
+      case 3:
+        return [
+          CurvedNavigationBarItem(
+            icon: Image.asset(
+              'assets/images/icon_retFund.png',
+              height: 25.sp,
+              color: AdaptiveTheme.of(context).mode.isDark
+                  ? Colors.white
+                  : Colors.black,
+            ),
+            label: "Liquidación",
+          )
+        ];
       default:
         return [
           CurvedNavigationBarItem(
