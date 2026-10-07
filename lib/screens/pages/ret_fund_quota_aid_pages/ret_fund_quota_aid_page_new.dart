@@ -10,14 +10,14 @@ import 'package:muserpol_pvt/services/services.dart';
 import 'package:muserpol_pvt/utils/save_document.dart';
 import 'package:open_filex/open_filex.dart';
 
-class ScreenBenefitsNew extends StatefulWidget {
-  const ScreenBenefitsNew({super.key});
+class ScreenRetFundQuotaAidNew extends StatefulWidget {
+  const ScreenRetFundQuotaAidNew({super.key});
 
   @override
-  State<ScreenBenefitsNew> createState() => _ScreenBenefitsNewState();
+  State<ScreenRetFundQuotaAidNew> createState() => _ScreenRetFundQuotaAidNewState();
 }
 
-class _ScreenBenefitsNewState extends State<ScreenBenefitsNew> {
+class _ScreenRetFundQuotaAidNewState extends State<ScreenRetFundQuotaAidNew> {
   List<Map<String, dynamic>> _retFunds = [];
   List<Map<String, dynamic>> _quotaAids = [];
   bool _loading = true;
@@ -158,7 +158,7 @@ class _ScreenBenefitsNewState extends State<ScreenBenefitsNew> {
                 ),
               )
             else if (_hasError)
-              _buildLoadError('No se pudieron cargar tus beneficios.',
+              _buildLoadError('No se pudieron cargar tus liquidaciones.',
                   _loadBenefits)
             else if (_retFunds.isEmpty)
               const _EmptyMessage('No tienes trámites de Fondo de Retiro.')

@@ -33,7 +33,7 @@ class _ScreenListServiceState extends State<ScreenListService> {
   final GlobalKey keyComplemento = GlobalKey();
   final GlobalKey keyAportes = GlobalKey();
   final GlobalKey keyPrestamos = GlobalKey();
-  final GlobalKey keyBeneficios = GlobalKey();
+  final GlobalKey keyRetFundQuotaAid = GlobalKey();
 
   TutorialCoachMark? tutorialCoachMark;
   bool isGridView = false;
@@ -98,7 +98,7 @@ class _ScreenListServiceState extends State<ScreenListService> {
         keyComplemento: keyComplemento,
         keyAportes: keyAportes,
         keyPrestamos: keyPrestamos,
-        keyBeneficios: keyBeneficios,
+        keyRetFundQuotaAid: keyRetFundQuotaAid,
       ),
       colorShadow: const Color(0xff419388),
       textSkip: "OMITIR",
@@ -235,10 +235,10 @@ class _ScreenListServiceState extends State<ScreenListService> {
         onPressed: () => _goToModule(2),
       ),
       ServiceData(
-        key: keyBeneficios,
+        key: keyRetFundQuotaAid,
         image: 'assets/images/icon_retFund.png',
         title: 'Fondo de Retiro y Cuota Auxilio Mortuorio',
-        description: 'Seguimiento de fondo de retiro.',
+        description: 'Impresión de liquidaciones de fondo de retiro y cuota auxilio mortuorio.',
         onPressed: () => _goToModule(3),
       ),
     ];
