@@ -161,9 +161,9 @@ class _ScreenRetFundQuotaAidNewState extends State<ScreenRetFundQuotaAidNew> {
               _buildLoadError('No se pudieron cargar tus liquidaciones.',
                   _loadBenefits)
             else if (_retFunds.isEmpty)
-              const _EmptyMessage('No tienes trámites de Fondo de Retiro.')
+              const _EmptyMessage('No tienes liquidaciones de Fondo de Retiro.')
             else
-              _tramitesSection(_retFunds, 'Benefits', 'ret_fun'),
+              _liquidationsSection(_retFunds, 'RetFunQuotaAid', 'ret_fun'),
             SizedBox(
               height: 20.h,
             ),
@@ -174,9 +174,9 @@ class _ScreenRetFundQuotaAidNewState extends State<ScreenRetFundQuotaAidNew> {
             if (!_loading && !_hasError)
               _quotaAids.isEmpty
                   ? const _EmptyMessage(
-                      'No tienes trámites de Cuota Auxilio Mortuorio.')
-                  : _tramitesSection(
-                      _quotaAids, 'Benefits', 'quota_aid'),
+                      'No tienes liquidaciones de Cuota Auxilio Mortuorio.')
+                  : _liquidationsSection(
+                      _quotaAids, 'RetFunQuotaAid', 'quota_aid'),
           ],
         ),
       ),
@@ -223,13 +223,13 @@ class _ScreenRetFundQuotaAidNewState extends State<ScreenRetFundQuotaAidNew> {
     );
   }
 
-  Widget _tramitesSection(
+  Widget _liquidationsSection(
       List<Map<String, dynamic>> items, String folder, String prefix) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (final item in items)
-          _TramiteCard(
+          _LiquidationCard(
             code: item['code']?.toString() ?? '-',
             receptionDate: item['reception_date']?.toString() ?? '-',
             modality: item['procedure_modality']?.toString() ?? '-',
@@ -251,7 +251,7 @@ class _ScreenRetFundQuotaAidNewState extends State<ScreenRetFundQuotaAidNew> {
   }
 }
 
-class _TramiteCard extends StatelessWidget {
+class _LiquidationCard extends StatelessWidget {
   final String code;
   final String receptionDate;
   final String modality;
@@ -260,7 +260,7 @@ class _TramiteCard extends StatelessWidget {
   final bool printing;
   final VoidCallback onPrint;
 
-  const _TramiteCard({
+  const _LiquidationCard({
     required this.code,
     required this.receptionDate,
     required this.modality,

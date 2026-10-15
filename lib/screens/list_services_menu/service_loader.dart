@@ -100,6 +100,66 @@ Future<void> getProcessingPermit(BuildContext context) async {
 
 //FUNCIONES RELACIONADOS A LO GENERAL
 
+/// Verifica si el afiliado tiene al menos una liquidación de
+/// Fondo de Retiro o Cuota Auxilio Mortuorio (mismo criterio que el kiosko).
+/// Usa los endpoints ya existentes; si el módulo aún no está en el backend
+/// (404/error) o no hay liquidaciones, devuelve false.
+Future<bool> loadRetFundQuotaAidAvailability(BuildContext context) async {
+  final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
+  final affiliateId = userBloc.state.user?.affiliateId;
+  if (affiliateId == null || !context.mounted) return false;
+
+  try {
+    final responses = await Future.wait([
+      serviceMethod(
+        true,
+        context,
+        'get',
+        null,
+        serviceGetRetirementFunds(affiliateId),
+        true,
+        false,
+      ),
+      serviceMethod(
+        true,
+        context,
+        'get',
+        null,
+        serviceGetQuotaAid(affiliateId),
+        true,
+        false,
+      ),
+    ]);
+
+    var hasRetFunds = false;
+    var hasQuotaAid = false;
+
+    for (var i = 0; i < responses.length; i++) {
+      final response = responses[i];
+      if (response == null) continue;
+      try {
+        final decoded = json.decode(response.body) as Map<String, dynamic>;
+        if (decoded['error'] == true) continue;
+        final data = decoded['data'];
+        if (data is List && data.isNotEmpty) {
+          if (i == 0) {
+            hasRetFunds = true;
+          } else {
+            hasQuotaAid = true;
+          }
+        }
+      } catch (_) {
+        // Respuesta con formato inesperado: se ignora y se sigue con la otra.
+      }
+    }
+
+    return hasRetFunds || hasQuotaAid;
+  } catch (e) {
+    debugPrint('Error al verificar disponibilidad de liquidaciones: $e');
+    return false;
+  }
+}
+
 Future<void> loadContributions(BuildContext context, {bool force = false}) async {
   if (_contributionsLoading) return;
   final contributionBloc =

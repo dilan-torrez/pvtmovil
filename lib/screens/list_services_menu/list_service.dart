@@ -38,6 +38,8 @@ class _ScreenListServiceState extends State<ScreenListService> {
   TutorialCoachMark? tutorialCoachMark;
   bool isGridView = false;
   bool _loadingData = true;
+  bool? _hasRetFundQuotaAidLiquidations;
+  bool _checkingRetFundQuotaAid = false;
 
   @override
   void initState() {
@@ -58,7 +60,18 @@ class _ScreenListServiceState extends State<ScreenListService> {
       }
 
       if (!mounted) return;
+
+      // Se consulta silenciosamente si el afiliado tiene liquidaciones de
+      // Fondo de Retiro / Cuota Auxilio Mortuorio (solo para decidir al tocar),
+      // en paralelo con la carga general, sin bloquear.
+      final availabilityFuture = loadRetFundQuotaAidAvailability(context);
       await loadGeneralServices(context);
+      final hasLiquidations = await availabilityFuture;
+
+      if (!mounted) return;
+      if (_hasRetFundQuotaAidLiquidations != hasLiquidations) {
+        setState(() => _hasRetFundQuotaAidLiquidations = hasLiquidations);
+      }
     } finally {
       if (isInitial && mounted) {
         setState(() => _loadingData = false);
@@ -133,6 +146,62 @@ class _ScreenListServiceState extends State<ScreenListService> {
       MaterialPageRoute(
         builder: (_) => NavigatorBarGeneral(initialIndex: index),
       ),
+    );
+  }
+
+  Future<void> _onRetFundQuotaAidPressed() async {
+    if (_checkingRetFundQuotaAid) return;
+    _checkingRetFundQuotaAid = true;
+
+    try {
+      var hasLiquidations = _hasRetFundQuotaAidLiquidations ?? false;
+      if (_hasRetFundQuotaAidLiquidations == null) {
+        // Aún no se resolvió durante la carga: se consulta en este momento.
+        hasLiquidations = await loadRetFundQuotaAidAvailability(context);
+        if (!mounted) return;
+        setState(() => _hasRetFundQuotaAidLiquidations = hasLiquidations);
+      }
+
+      if (!mounted) return;
+      if (hasLiquidations) {
+        _goToModule(3);
+      } else {
+        _showNoLiquidationsDialog();
+      }
+    } finally {
+      _checkingRetFundQuotaAid = false;
+    }
+  }
+
+  void _showNoLiquidationsDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext contextDialog) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.warning_amber,
+                size: 40,
+                color: Colors.amber,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'No tiene trámites de Fondo de Retiro, Cuota Mortuoria o Auxilio Mortuorio.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              ButtonComponent(
+                text: 'OK',
+                onPressed: () => Navigator.of(contextDialog).pop(),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -237,9 +306,9 @@ class _ScreenListServiceState extends State<ScreenListService> {
       ServiceData(
         key: keyRetFundQuotaAid,
         image: 'assets/images/icon_retFund.png',
-        title: 'Fondo de Retiro y Cuota Auxilio Mortuorio',
+        title: 'Fondo de Retiro, Cuota Auxilio Mortuorio',
         description: 'Impresión de liquidaciones de fondo de retiro y cuota auxilio mortuorio.',
-        onPressed: () => _goToModule(3),
+        onPressed: _onRetFundQuotaAidPressed,
       ),
     ];
 
