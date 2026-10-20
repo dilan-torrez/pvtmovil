@@ -19,6 +19,8 @@ String serviceVersion() => '$hostGATEWAY/$reazonMovil/version';
 String loginAppMobile() => '$hostGATEWAY/$auth/loginAppMobile';
 //VERIFICACION DEL PIN ENVIADO
 String verifyPin() => '$hostGATEWAY/$auth/verifyPin';
+//ENROLAMIENTO FREEOTP (TOTP, sin SMS)
+String registerTotp() => '$hostGATEWAY/$auth/registerTotp';
 //CERRAR SESION DE FORMA VOLUNTARIA
 String serviceAuthSession() => '$hostGATEWAY/$auth/logoutAppMobile';
 //SE ENVIA EL CARNET CORRESPONDIENTE A LA AUTENTICACION

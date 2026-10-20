@@ -20,6 +20,7 @@ import 'package:muserpol_pvt/model/user_model.dart';
 import 'package:muserpol_pvt/provider/app_session_state.dart';
 import 'package:muserpol_pvt/provider/app_state.dart';
 import 'package:muserpol_pvt/screens/access/sendmessagelogin.dart';
+import 'package:muserpol_pvt/screens/access/freeotp_login.dart';
 import 'package:muserpol_pvt/screens/access/web_screen.dart';
 import 'package:muserpol_pvt/services/auth_service.dart';
 import 'package:muserpol_pvt/services/push_notifications.dart';
@@ -243,6 +244,21 @@ class _ScreenFormLoginState extends State<ScreenFormLogin> {
                       ],
                     ),
 
+                    SizedBox(height: 12.h),
+
+                    // ACCESO CON FREEOTP (TOTP, SIN SMS)
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.qr_code_2, size: 20),
+                      label: const Text('Acceso con FreeOTP (sin SMS)'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: isLoading ? null : onFreeOtpPressed,
+                    ),
+
                     SizedBox(
                       height: 30.h,
                     ),
@@ -337,6 +353,68 @@ class _ScreenFormLoginState extends State<ScreenFormLogin> {
 
   String getRawPhoneNumber(String formatted) {
     return formatted.replaceAll(RegExp(r'[^0-9]'), '');
+  }
+
+  /// Acceso con FreeOTP: valida el formulario, arma el mismo body que el
+  /// login normal (sin signature SMS ni biometria) y navega a la pantalla
+  /// de enrolamiento TOTP.
+  Future<void> onFreeOtpPressed() async {
+    FocusScope.of(context).unfocus();
+
+    if (_countryDialCode != '+591') {
+      final continuar = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: const Text("¿Usted es del extranjero?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Continuar"),
+            ),
+          ],
+        ),
+      );
+      if (continuar != true || !mounted) return;
+    }
+
+    if (!formKey.currentState!.validate()) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      final Map<String, dynamic> otpBody = {};
+      if (dotenv.env['storeAndroid'] == 'appgallery') {
+        otpBody['firebaseToken'] = '';
+      } else {
+        otpBody['firebaseToken'] =
+            await PushNotificationService.getTokenFirebase();
+      }
+      otpBody['username'] =
+          '${dniCtrl.text.trim()}${dniComCtrl.text == '' ? '' : '-${dniComCtrl.text.trim()}'}';
+      otpBody['cellphone'] = getRawPhoneNumber(phoneCtrl.text.trim());
+      otpBody['countryCode'] = _countryDialCode;
+      otpBody['signature'] = '';
+      otpBody['isBiometric'] = false;
+
+      if (!mounted) return;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => FreeOtpLogin(body: otpBody),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      AuthHelpers.showError(
+          context, 'Ocurrió un error al conectar con el servidor');
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
   }
 
   Future<void> sendCredentialsNew({required bool isBiometric}) async {

@@ -73,6 +73,7 @@ dependencies:
   image: ^4.10.1
   country_picker: ^2.0.28
   permission_handler: ^13.0.2
+  qr_flutter: ^4.1.0
 
 
 dev_dependencies:
