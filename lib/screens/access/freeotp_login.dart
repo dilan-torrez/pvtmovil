@@ -45,6 +45,7 @@ class _SessionResponse {
 class _FreeOtpLogin extends State<FreeOtpLogin> {
   final PinInputController codeCtrl = PinInputController();
   bool isLoading = false;
+  bool _verifying = false;
 
   String? messageId;
   String? secret;
@@ -101,6 +102,10 @@ class _FreeOtpLogin extends State<FreeOtpLogin> {
 
   Future<void> verifyCode(String code) async {
     if (messageId == null) return;
+    // Evita doble verificacion: onCompleted y pasteCode pueden dispararse
+    // casi a la vez (pegar los 6 digitos completa el campo).
+    if (_verifying) return;
+    _verifying = true;
 
     final userBloc = BlocProvider.of<UserBloc>(context, listen: false);
     final notificationBloc =
@@ -124,6 +129,7 @@ class _FreeOtpLogin extends State<FreeOtpLogin> {
     if (!mounted) return;
 
     if (response == null) {
+      _verifying = false;
       setState(() => isLoading = false);
       return;
     }
@@ -131,6 +137,7 @@ class _FreeOtpLogin extends State<FreeOtpLogin> {
     final decoded = json.decode(response.body) as Map<String, dynamic>;
 
     if (decoded['error'] == true) {
+      _verifying = false;
       setState(() {
         isLoading = false;
         errorMessage = decoded['message'] ?? 'Código incorrecto';
@@ -143,6 +150,7 @@ class _FreeOtpLogin extends State<FreeOtpLogin> {
     if (dataJson == null ||
         dataJson['apiToken'] == null ||
         dataJson['information'] == null) {
+      _verifying = false;
       setState(() {
         isLoading = false;
         errorMessage = 'Respuesta inválida del servidor';
@@ -179,6 +187,36 @@ class _FreeOtpLogin extends State<FreeOtpLogin> {
       ),
       user: user,
     );
+  }
+
+  /// Toma el portapapeles, extrae los digitos y completa/verifica el codigo.
+  /// Util porque el campo de 6 celdas no ofrece un menu de pegado comodo.
+  Future<void> pasteCode() async {
+    final clip = await Clipboard.getData(Clipboard.kTextPlain);
+
+    if (!mounted) return;
+
+    final raw = clip?.text ?? '';
+    // FreeOTP y los SMS suelen copiar el codigo con espacios o guiones.
+    final digits = raw.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (digits.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El portapapeles no contiene un código'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final code = digits.length >= 6 ? digits.substring(0, 6) : digits;
+    codeCtrl.setText(code);
+
+    if (code.length == 6) {
+      FocusScope.of(context).unfocus();
+      await verifyCode(code);
+    }
   }
 
   @override
@@ -275,8 +313,13 @@ class _FreeOtpLogin extends State<FreeOtpLogin> {
                   pinController: codeCtrl,
                   length: 6,
                   keyboardType: TextInputType.number,
+                  // Permite pegar desde el menu del sistema (long-press)...
+                  enablePaste: true,
+                  // ...y ademas auto-envia al completar los 6 digitos, para no
+                  // perder el codigo si cambia mientras se teclea.
                   onCompleted: (value) {
                     FocusScope.of(context).unfocus();
+                    verifyCode(value);
                   },
                   theme: MaterialPinTheme(
                     // 6 celdas + 5 separaciones de 8px deben caber en el
@@ -302,6 +345,14 @@ class _FreeOtpLogin extends State<FreeOtpLogin> {
                     focusedFillColor: Colors.transparent,
                     showCursor: false,
                     animationDuration: const Duration(milliseconds: 300),
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Center(
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.content_paste, size: 18),
+                    label: const Text('Pegar código'),
+                    onPressed: isLoading ? null : pasteCode,
                   ),
                 ),
               ] else ...[
