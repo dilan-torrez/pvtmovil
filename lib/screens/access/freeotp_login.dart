@@ -279,7 +279,19 @@ class _FreeOtpLogin extends State<FreeOtpLogin> {
                     FocusScope.of(context).unfocus();
                   },
                   theme: MaterialPinTheme(
-                    cellSize: Size(50.w, 60.w),
+                    // 6 celdas + 5 separaciones de 8px deben caber en el
+                    // ancho disponible. Se calcula a partir del ancho de
+                    // pantalla menos el padding horizontal (15.w por lado)
+                    // para evitar el desborde en pantallas angostas.
+                    cellSize: Size(
+                      ((MediaQuery.of(context).size.width -
+                              30.w -
+                              (5 * 8)) /
+                          6)
+                          .clamp(36.0, 52.0),
+                      56,
+                    ),
+                    spacing: 8,
                     shape: MaterialPinShape.outlined,
                     borderRadius: BorderRadius.circular(8),
                     borderColor: Colors.black,
