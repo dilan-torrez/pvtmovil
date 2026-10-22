@@ -5,7 +5,9 @@ import 'package:muserpol_pvt/screens/navigation_general_pages.dart';
 import 'package:muserpol_pvt/screens/pages/loans_pages/loan_pre_evaluation/widgets/loan_progress_indicator.dart';
 import 'package:muserpol_pvt/model/saved_loan_evaluation.dart';
 import 'package:muserpol_pvt/model/evaluation_models.dart';
+import 'package:muserpol_pvt/model/loan_pre_evaluation_model.dart';
 import 'package:muserpol_pvt/services/evaluation_service.dart';
+import 'package:muserpol_pvt/bloc/loan_pre_evaluation/loan_pre_evaluation_bloc.dart';
 import 'package:muserpol_pvt/bloc/user/user_bloc.dart';
 import 'widgets/evaluation_widgets.dart';
 
@@ -91,10 +93,36 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       ..sort((a, b) => a.number.compareTo(b.number));
   }
 
+  /// Obtiene el `catalogHash` de la modalidad que se está guardando.
+  ///
+  /// Se lee del bloc en lugar de arrastrarlo por los constructores de las tres
+  /// pantallas del flujo. Si el bloc no está disponible o la modalidad no
+  /// aparece, se guarda vacío: la evaluación se seguirá pudiendo usar y se
+  /// adoptará la firma en la próxima validación.
+  String _catalogHashForSavedModality() {
+    try {
+      final state = context.read<LoanPreEvaluationBloc>().state;
+      List<LoanModalityNew>? modalities;
+      if (state is LoanModalitiesLoaded) {
+        modalities = state.modalities;
+      } else if (state is LoanModalitiesWithContributionsLoaded) {
+        modalities = state.modalities;
+      }
+      if (modalities == null) return '';
+      for (final modality in modalities) {
+        if (modality.procedureModalityId == widget.procedureModalityId) {
+          return modality.catalogHash;
+        }
+      }
+    } catch (e) {
+      debugPrint('No se pudo obtener catalogHash: $e');
+    }
+    return '';
+  }
+
   Future<bool> _saveEvaluation() async {
     try {
-      final evaluation = SavedLoanEvaluation(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+      final evaluation = SavedLoanEvaluation(        id: DateTime.now().millisecondsSinceEpoch.toString(),
         createdAt: DateTime.now(),
         modalityName: widget.modalityName,
         amount: widget.amount,
@@ -120,6 +148,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         affiliateName: widget.affiliateName,
         affiliateIdentityCard: widget.affiliateIdentityCard,
         loanCharge: widget.loanCharge,
+        catalogHash: _catalogHashForSavedModality(),
         documents: widget.documents
             .map((doc) => {
                   'number': doc.number,

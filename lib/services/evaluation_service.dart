@@ -3,7 +3,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muserpol_pvt/model/evaluation_models.dart';
+import 'package:muserpol_pvt/model/loan_pre_evaluation_model.dart';
 import 'package:muserpol_pvt/model/saved_loan_evaluation.dart';
+
+/// Resultado de la validación de una evaluación contra el catálogo vigente.
+class ObsoleteEvaluationReport {
+  final SavedLoanEvaluation evaluation;
+  final String reason;
+
+  const ObsoleteEvaluationReport(this.evaluation, this.reason);
+}
 
 /// Unified service for loan evaluation functionality
 /// Consolidates storage, calculations, utilities, and API calls
@@ -124,69 +133,136 @@ class EvaluationService {
     }
   }
 
-  /// Clean obsolete evaluations based on current modalities
-  Future<int> cleanObsoleteEvaluations(List<dynamic> currentModalities,
-      {int? userId}) async {
+  /// Valida las evaluaciones guardadas contra el catálogo vigente.
+  ///
+  /// **No borra nada**: marca `isObsolete` con un motivo legible para que el
+  /// usuario decida si recalcula o elimina. Así un falso positivo nunca
+  /// destruye datos.
+  ///
+  /// La comparación se hace **por `procedureModalityId`** (identificador estable)
+  /// y no por el índice posicional de la lista, que cambia cuando se habilita o
+  /// deshabilita una modalidad.
+  ///
+  /// Todo el cálculo ocurre en el cliente: el backend solo aporta el
+  /// `catalogHash` de cada modalidad en la misma respuesta que ya se pedía.
+  Future<List<ObsoleteEvaluationReport>> validateEvaluations(
+    List<LoanModalityNew> currentModalities, {
+    int? userId,
+  }) async {
+    final reports = <ObsoleteEvaluationReport>[];
+
     try {
       final evaluations = await getSavedEvaluations(userId: userId);
-      final validEvaluations = <SavedLoanEvaluation>[];
-      int removedCount = 0;
+      final byProcedureId = <int, LoanModalityNew>{
+        for (final modality in currentModalities)
+          modality.procedureModalityId: modality,
+      };
+
+      var changed = false;
 
       for (final evaluation in evaluations) {
-        // Find corresponding current modality
-        final currentModality = currentModalities.firstWhere(
-          (m) => m['id'] == evaluation.modalityId,
-          orElse: () => null,
-        );
+        final modality = byProcedureId[evaluation.procedureModalityId];
+        String? reason;
 
-        if (currentModality == null) {
-          // Modality no longer exists
-          removedCount++;
-          continue;
+        if (modality == null) {
+          // La modalidad ya no aplica a este perfil (categoría, subsector,
+          // estado, o fue deshabilitada).
+          reason = 'La modalidad ya no está disponible para tu perfil';
+        } else if (evaluation.catalogHash.isEmpty) {
+          // Evaluación creada antes de existir la firma. Se adopta el hash
+          // actual solo si los parámetros que sí conocemos coinciden; si no,
+          // se marca como desactualizada.
+          final paramsMatch = _paramsMatch(evaluation, modality);
+          if (paramsMatch) {
+            evaluation.catalogHash = modality.catalogHash;
+            changed = true;
+          } else {
+            reason = _describeCatalogChange(evaluation, modality);
+          }
+        } else if (modality.catalogHash.isNotEmpty &&
+            evaluation.catalogHash != modality.catalogHash) {
+          reason = _describeCatalogChange(evaluation, modality);
         }
 
-        // Validate that key parameters haven't changed
-        final params = currentModality['parameters'];
-        if (params == null) {
-          removedCount++;
-          continue;
+        final isObsolete = reason != null;
+
+        if (evaluation.isObsolete != isObsolete ||
+            evaluation.obsoleteReason != reason) {
+          evaluation.isObsolete = isObsolete;
+          evaluation.obsoleteReason = reason;
+          evaluation.checkedAt = DateTime.now();
+          changed = true;
         }
 
-        final currentAnnualInterest =
-            (params['annualInterest'] as num?)?.toDouble() ?? 0.0;
-        final currentPeriodInterest =
-            (params['periodInterest'] as num?)?.toDouble() ?? 0.0;
-        final currentGuarantors = params['guarantors'] as int? ?? 0;
-
-        // Compare with tolerance for decimals
-        final interestChanged =
-            (evaluation.annualInterest - currentAnnualInterest).abs() > 0.01 ||
-                (evaluation.periodInterest - currentPeriodInterest).abs() >
-                    0.01;
-        final guarantorsChanged = evaluation.guarantors != currentGuarantors;
-
-        if (interestChanged || guarantorsChanged) {
-          removedCount++;
-          continue;
+        if (isObsolete) {
+          reports.add(ObsoleteEvaluationReport(evaluation, reason));
         }
-
-        // Evaluation is valid
-        validEvaluations.add(evaluation);
       }
 
-      // Save only valid evaluations
-      if (removedCount > 0) {
-        final prefs = await SharedPreferences.getInstance();
-        final key = userId != null ? '${_storageKey}_$userId' : _storageKey;
-        await prefs.setString(
-            key, jsonEncode(validEvaluations.map((e) => e.toJson()).toList()));
+      if (changed) {
+        await _persistAll(evaluations, userId: userId);
       }
 
-      return removedCount;
+      return reports;
     } catch (e) {
-      debugPrint('Error cleaning obsolete evaluations: $e');
-      return 0;
+      debugPrint('Error validating evaluations: $e');
+      return reports;
     }
+  }
+
+  /// Compara solo los parámetros que la evaluación guarda por sí misma.
+  bool _paramsMatch(SavedLoanEvaluation evaluation, LoanModalityNew modality) {
+    final params = modality.parameters;
+    return (evaluation.annualInterest - params.annualInterest).abs() <= 0.01 &&
+        (evaluation.periodInterest - params.periodInterest).abs() <= 0.01 &&
+        evaluation.guarantors == params.guarantors;
+  }
+
+  /// Construye un motivo legible a partir de los campos que sí guardamos.
+  String _describeCatalogChange(
+    SavedLoanEvaluation evaluation,
+    LoanModalityNew modality,
+  ) {
+    final params = modality.parameters;
+    final changes = <String>[];
+
+    if ((evaluation.annualInterest - params.annualInterest).abs() > 0.01) {
+      changes.add(
+        'interés anual ${_pct(evaluation.annualInterest)} → ${_pct(params.annualInterest)}',
+      );
+    }
+    if ((evaluation.periodInterest - params.periodInterest).abs() > 0.01) {
+      changes.add(
+        'interés periódico ${_pct(evaluation.periodInterest)} → ${_pct(params.periodInterest)}',
+      );
+    }
+    if (evaluation.guarantors != params.guarantors) {
+      changes.add('garantes ${evaluation.guarantors} → ${params.guarantors}');
+    }
+
+    if (changes.isEmpty) {
+      // El hash cambió pero ningún parámetro conocido lo explica: el cambio
+      // está en los requisitos documentales u otro parámetro de cálculo.
+      return 'Cambiaron los requisitos o parámetros de la modalidad';
+    }
+
+    return 'Cambió ${changes.join(', ')}';
+  }
+
+  String _pct(double value) =>
+      '${value.toStringAsFixed(2).replaceAll('.', ',')}%';
+
+  /// Reescribe el listado completo (append/update/delete comparten formato).
+  Future<void> _persistAll(
+    List<SavedLoanEvaluation> evaluations, {
+    int? userId,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = userId != null ? '${_storageKey}_$userId' : _storageKey;
+    await prefs.setString(
+      key,
+      jsonEncode(evaluations.map((e) => e.toJson()).toList()),
+    );
   }
 
   /// Get evaluation by ID

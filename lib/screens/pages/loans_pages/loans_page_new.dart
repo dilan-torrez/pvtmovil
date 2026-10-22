@@ -14,7 +14,6 @@ import 'package:muserpol_pvt/screens/list_services_menu/service_loader.dart';
 import 'package:muserpol_pvt/services/auth_service.dart';
 import 'package:muserpol_pvt/services/service_method.dart';
 import 'package:muserpol_pvt/services/services.dart';
-import 'package:muserpol_pvt/utils/logger.dart'; // SEGURIDAD: Import para logging seguro
 import 'package:provider/provider.dart';
 
 class ScreenLoansNew extends StatefulWidget {
@@ -178,9 +177,7 @@ class _ScreenLoansNewState extends State<ScreenLoansNew> {
     );
   }
 
-  void _showPreEvaluationModal() async {
-    await _cleanObsoleteEvaluationsIfNeeded();
-
+  void _showPreEvaluationModal() {
     if (!mounted) return;
 
     showBarModalBottomSheet(
@@ -190,20 +187,6 @@ class _ScreenLoansNewState extends State<ScreenLoansNew> {
       context: context,
       builder: (context) => _buildPreEvaluationModal(),
     );
-  }
-
-  Future<void> _cleanObsoleteEvaluationsIfNeeded() async {
-    try {
-      final loanBloc = BlocProvider.of<LoanBloc>(context, listen: false);
-
-      if (loanBloc.state.existLoan && loanBloc.state.loan != null) {
-        // SEGURIDAD: Uso de AppLog para evitar registros en producción
-        AppLog.d('Verificando evaluaciones guardadas...');
-      }
-    } catch (e) {
-      // SEGURIDAD: Uso de AppLog para evitar registros en producción
-      AppLog.d('Error al verificar evaluaciones: $e');
-    }
   }
 
   Future<void> reloadLoans() async {

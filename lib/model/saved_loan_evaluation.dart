@@ -32,6 +32,23 @@ class SavedLoanEvaluation {
   final String? affiliateIdentityCard; // CI del afiliado
   final double? loanCharge; // Cargo del préstamo
 
+  /// Firma del catálogo (parámetros + documentos) vigente cuando se guardó.
+  /// Si difiere de la actual, la evaluación quedó desactualizada.
+  ///
+  /// No es `final` a propósito: las evaluaciones creadas antes de existir la
+  /// firma se "adoptan" con el hash actual cuando sus parámetros coinciden.
+  String catalogHash;
+
+  /// Marca de evaluación desactualizada. No se borra: se conserva para que el
+  /// usuario decida si recalcula o elimina.
+  bool isObsolete;
+
+  /// Motivo legible del porqué quedó desactualizada.
+  String? obsoleteReason;
+
+  /// Última vez que se comparó contra el catálogo vigente.
+  DateTime? checkedAt;
+
   SavedLoanEvaluation({
     required this.id,
     required this.createdAt,
@@ -61,6 +78,10 @@ class SavedLoanEvaluation {
     this.affiliateName,
     this.affiliateIdentityCard,
     this.loanCharge,
+    this.catalogHash = '',
+    this.isObsolete = false,
+    this.obsoleteReason,
+    this.checkedAt,
   });
 
   Map<String, dynamic> toJson() {
@@ -93,6 +114,10 @@ class SavedLoanEvaluation {
       'affiliateName': affiliateName,
       'affiliateIdentityCard': affiliateIdentityCard,
       'loanCharge': loanCharge,
+      'catalogHash': catalogHash,
+      'isObsolete': isObsolete,
+      'obsoleteReason': obsoleteReason,
+      'checkedAt': checkedAt?.toIso8601String(),
     };
   }
 
@@ -126,6 +151,12 @@ class SavedLoanEvaluation {
       affiliateName: json['affiliateName'] as String?,
       affiliateIdentityCard: json['affiliateIdentityCard'] as String?,
       loanCharge: (json['loanCharge'] as num?)?.toDouble(),
+      catalogHash: json['catalogHash'] as String? ?? '',
+      isObsolete: json['isObsolete'] as bool? ?? false,
+      obsoleteReason: json['obsoleteReason'] as String?,
+      checkedAt: json['checkedAt'] != null
+          ? DateTime.tryParse(json['checkedAt'] as String)
+          : null,
     );
   }
 

@@ -24,6 +24,14 @@ class LoanModalityNew {
   final String subsector;
   final LoanParametersNew parameters;
 
+  /// Firma del catálogo (parámetros + documentos) con la que el backend
+  /// identifica esta configuración. Se guarda con cada evaluación para
+  /// detectar localmente si quedó desactualizada.
+  final String catalogHash;
+
+  /// Firma solo de los requisitos documentales.
+  final String documentsHash;
+
   LoanModalityNew({
     required this.id,
     required this.affiliateId,
@@ -34,6 +42,8 @@ class LoanModalityNew {
     required this.affiliateStateType,
     required this.subsector,
     required this.parameters,
+    this.catalogHash = '',
+    this.documentsHash = '',
   });
 
   factory LoanModalityNew.fromJson(Map<String, dynamic> json) {
@@ -48,6 +58,8 @@ class LoanModalityNew {
         affiliateStateType: json['affiliate_state_type']?.toString() ?? '',
         subsector: json['subsector']?.toString() ?? '',
         parameters: LoanParametersNew.fromJson(json['parameters'] ?? {}),
+        catalogHash: json['catalog_hash']?.toString() ?? '',
+        documentsHash: json['documents_hash']?.toString() ?? '',
       );
 
       AppLog.d('✅ LoanModalityNew parseado exitosamente: ${modality.name}');

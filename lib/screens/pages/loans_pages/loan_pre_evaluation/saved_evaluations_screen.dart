@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:muserpol_pvt/model/loan_pre_evaluation_model.dart';
 import 'package:muserpol_pvt/model/saved_loan_evaluation.dart';
 import 'package:muserpol_pvt/services/evaluation_service.dart';
+import 'package:muserpol_pvt/services/service_method.dart';
+import 'package:muserpol_pvt/services/services.dart';
 
 import 'package:muserpol_pvt/bloc/loan_pre_evaluation/loan_pre_evaluation_bloc.dart';
 import 'package:muserpol_pvt/utils/logger.dart'; // SEGURIDAD: Import para logging seguro
@@ -31,65 +35,76 @@ class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
     setState(() => _isLoading = true);
     final userBloc = context.read<UserBloc>();
     final userId = userBloc.state.user?.affiliateId;
-    await _cleanObsoleteEvaluations();
+
+    // Una sola llamada: trae el catálogo vigente CON las firmas (catalog_hash).
+    // El backend la cachea con single-flight, así que no genera carga extra.
+    final currentModalities = await _loadCurrentModalities();
+    if (currentModalities.isNotEmpty) {
+      final reports = await _evaluationService.validateEvaluations(
+        currentModalities,
+        userId: userId,
+      );
+
+      if (reports.isNotEmpty && mounted) {
+        final plural = reports.length == 1 ? 'evaluación' : 'evaluaciones';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '⚠️ ${reports.length} $plural desactualizada(s): revisa el detalle en cada tarjeta.',
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
 
     final evaluations =
         await _evaluationService.getSavedEvaluations(userId: userId);
+    if (!mounted) return;
     setState(() {
       _evaluations = evaluations;
       _isLoading = false;
     });
   }
 
-  Future<void> _cleanObsoleteEvaluations() async {
+  /// Obtiene las modalidades vigentes del afiliado (con sus firmas).
+  ///
+  /// Se llama directamente aquí porque el `LoanPreEvaluationBloc` del modal ya
+  /// fue destruido al abrir esta pantalla. Ante cualquier fallo (sin red, error
+  /// del servicio) devuelve una lista vacía: en ese caso **no se marca nada
+  /// como obsoleto**, para no invalidar datos sin poder verificarlos.
+  Future<List<LoanModalityNew>> _loadCurrentModalities() async {
     try {
-      final loanBloc = context.read<LoanPreEvaluationBloc>();
-      final state = loanBloc.state;
+      final affiliateId = context.read<UserBloc>().state.user?.affiliateId;
+      if (affiliateId == null) return [];
 
-      List<dynamic>? currentModalities;
+      final response = await serviceMethod(
+        context.mounted,
+        context,
+        'get',
+        null,
+        servicePreEvaluation(affiliateId),
+        true,
+        false,
+      );
 
-      if (state is LoanModalitiesLoaded) {
-        currentModalities = state.modalities
-            .map((m) => {
-                  'id': m.id,
-                  'parameters': {
-                    'annualInterest': m.parameters.annualInterest,
-                    'periodInterest': m.parameters.periodInterest,
-                    'guarantors': m.parameters.guarantors,
-                  }
-                })
-            .toList();
-      } else if (state is LoanModalitiesWithContributionsLoaded) {
-        currentModalities = state.modalities
-            .map((m) => {
-                  'id': m.id,
-                  'parameters': {
-                    'annualInterest': m.parameters.annualInterest,
-                    'periodInterest': m.parameters.periodInterest,
-                    'guarantors': m.parameters.guarantors,
-                  }
-                })
-            .toList();
+      if (response == null ||
+          response.statusCode != 200 ||
+          response.body.isEmpty) {
+        return [];
       }
 
-      if (currentModalities != null && currentModalities.isNotEmpty) {
-        final removedCount = await _evaluationService
-            .cleanObsoleteEvaluations(currentModalities);
+      final dynamic jsonData = json.decode(response.body);
+      if (jsonData is! List) return [];
 
-        if (removedCount > 0 && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                  '⚠️ Se eliminaron $removedCount evaluación(es) con datos obsoletos'),
-              backgroundColor: Colors.orange,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-      }
+      return jsonData
+          .whereType<Map<String, dynamic>>()
+          .map((item) => LoanModalityNew.fromJson(item))
+          .toList();
     } catch (e) {
-      // SEGURIDAD: Uso de AppLog para evitar registros en producción
-      AppLog.d('Error al limpiar evaluaciones obsoletas: $e');
+      AppLog.d('No se pudo cargar el catálogo vigente: $e');
+      return [];
     }
   }
 
@@ -175,6 +190,26 @@ class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
         }
       }
 
+      // Resolver la modalidad por su identificador estable, NO por el índice
+      // guardado: si el catálogo se reordenó, el índice apuntaría a otra.
+      List<LoanModalityNew>? modalities;
+      final currentState = newBloc.state;
+      if (currentState is LoanModalitiesLoaded) {
+        modalities = currentState.modalities;
+      } else if (currentState is LoanModalitiesWithContributionsLoaded) {
+        modalities = currentState.modalities;
+      }
+
+      var resolvedModalityId = evaluation.modalityId;
+      if (modalities != null) {
+        final match = modalities.where(
+          (m) => m.procedureModalityId == evaluation.procedureModalityId,
+        );
+        if (match.isNotEmpty) {
+          resolvedModalityId = match.first.id;
+        }
+      }
+
       if (!mounted) return;
 
       Navigator.pop(context);
@@ -185,7 +220,7 @@ class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
           builder: (context) => BlocProvider.value(
             value: newBloc,
             child: CalculationResultScreen(
-              modalityId: evaluation.modalityId,
+              modalityId: resolvedModalityId,
               sueldoBase: evaluation.sueldoBase,
               affiliateStateType: evaluation.affiliateStateType,
               liquidoPagable: evaluation.liquidoPagable,
@@ -318,10 +353,12 @@ class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: evaluation.isFavorite
-              ? Colors.amber.shade400
-              : theme.dividerColor,
-          width: evaluation.isFavorite ? 2 : 1,
+          color: evaluation.isObsolete
+              ? Colors.red.shade400
+              : evaluation.isFavorite
+                  ? Colors.amber.shade400
+                  : theme.dividerColor,
+          width: evaluation.isObsolete || evaluation.isFavorite ? 2 : 1,
         ),
         boxShadow: [
           BoxShadow(
@@ -333,7 +370,67 @@ class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
       ),
       child: Column(
         children: [
-          if (isOld)
+          if (evaluation.isObsolete)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.10),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.error_outline,
+                          color: Colors.red.shade700, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Evaluación desactualizada',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.red.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'Recargar o eliminar',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.red.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    evaluation.obsoleteReason ??
+                        'Los parámetros de la modalidad cambiaron',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.red.shade900,
+                    ),
+                  ),
+                  if (evaluation.checkedAt != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      'Verificado: ${_formatDate(evaluation.checkedAt!)}',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.red.shade400,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          if (isOld && !evaluation.isObsolete)
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
