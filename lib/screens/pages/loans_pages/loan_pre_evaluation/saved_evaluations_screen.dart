@@ -23,6 +23,7 @@ class SavedEvaluationsScreen extends StatefulWidget {
 class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
   final EvaluationService _evaluationService = EvaluationService();
   List<SavedLoanEvaluation> _evaluations = [];
+  List<LoanModalityNew> _currentModalities = const [];
   bool _isLoading = true;
 
   @override
@@ -31,17 +32,20 @@ class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
     _loadEvaluations();
   }
 
-  Future<void> _loadEvaluations() async {
+  Future<void> _loadEvaluations({bool refreshCatalog = false}) async {
     setState(() => _isLoading = true);
     final userBloc = context.read<UserBloc>();
     final userId = userBloc.state.user?.affiliateId;
 
-    // Una sola llamada: trae el catálogo vigente CON las firmas (catalog_hash).
-    // El backend la cachea con single-flight, así que no genera carga extra.
-    final currentModalities = await _loadCurrentModalities();
-    if (currentModalities.isNotEmpty) {
+    // El catálogo vigente se pide UNA vez por apertura de pantalla. Las recargas
+    // posteriores (favorito, eliminar) reutilizan la lista en memoria.
+    if (_currentModalities.isEmpty || refreshCatalog) {
+      _currentModalities = await _loadCurrentModalities();
+    }
+
+    if (_currentModalities.isNotEmpty) {
       final reports = await _evaluationService.validateEvaluations(
-        currentModalities,
+        _currentModalities,
         userId: userId,
       );
 
@@ -327,7 +331,7 @@ class _SavedEvaluationsScreenState extends State<SavedEvaluationsScreen> {
       });
 
     return RefreshIndicator(
-      onRefresh: _loadEvaluations,
+      onRefresh: () => _loadEvaluations(refreshCatalog: true),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: sortedEvaluations.length,
