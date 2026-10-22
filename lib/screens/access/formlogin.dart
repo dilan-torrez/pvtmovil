@@ -197,6 +197,21 @@ class _ScreenFormLoginState extends State<ScreenFormLogin> {
                     SizedBox(
                       height: 10.h,
                     ),
+                    // ACCESO CON FREEOTP (TOTP, SIN SMS) - arriba del inicio
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.qr_code_2, size: 20),
+                      label: const Text('Acceso con FreeOTP (sin SMS)'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: isLoading ? null : onFreeOtpPressed,
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
                     // COMPONENTE BUTTON
                     ButtonComponent(
                         text: 'Continuar',
@@ -245,19 +260,6 @@ class _ScreenFormLoginState extends State<ScreenFormLogin> {
                     ),
 
                     SizedBox(height: 12.h),
-
-                    // ACCESO CON FREEOTP (TOTP, SIN SMS)
-                    OutlinedButton.icon(
-                      icon: const Icon(Icons.qr_code_2, size: 20),
-                      label: const Text('Acceso con FreeOTP (sin SMS)'),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(45),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: isLoading ? null : onFreeOtpPressed,
-                    ),
 
                     SizedBox(
                       height: 30.h,
